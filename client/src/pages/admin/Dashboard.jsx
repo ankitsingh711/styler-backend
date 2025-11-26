@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
-import { FaUsers, FaScissors, FaClipboardList, FaCut } from 'react-icons/fa';
+import { FaUsers, FaClipboardList, FaCut } from 'react-icons/fa';
 import './Dashboard.css';
 
 const Dashboard = () => {
     const stats = [
         { icon: <FaUsers />, title: 'Total Users', count: '150+', color: '#667eea' },
-        { icon: <FaScissors />, title: 'Stylers', count: '12', color: '#764ba2' },
+        { icon: <FaCut />, title: 'Stylers', count: '12', color: '#764ba2' },
         { icon: <FaCut />, title: 'Services', count: '25', color: '#f093fb' },
         { icon: <FaClipboardList />, title: 'Appointments', count: '350+', color: '#4facfe' },
     ];
@@ -40,7 +40,7 @@ const Dashboard = () => {
                             <span>Manage Users</span>
                         </Link>
                         <Link to="/admin/stylers" className="action-card">
-                            <FaScissors />
+                            <FaCut />
                             <span>Manage Stylers</span>
                         </Link>
                         <Link to="/admin/services" className="action-card">
