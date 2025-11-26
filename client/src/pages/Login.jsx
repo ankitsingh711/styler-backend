@@ -44,7 +44,7 @@ const Login = () => {
                     token: response.token,
                     email: formData.email,
                     userType: USER_TYPES.USER,
-                    name: response.name || formData.email,
+                    name: response.username || formData.email,
                 });
 
                 navigate('/profile');
