@@ -42,21 +42,31 @@ const Profile = () => {
     return (
         <div className="profile-page">
             <div className="profile-header">
-                <h1>My Profile</h1>
-                <button onClick={handleLogout} className="logout-btn">Logout</button>
+                <div className="header-content">
+                    <h1>My Profile</h1>
+                    <p>Welcome back, {user?.userName || 'User'}!</p>
+                </div>
             </div>
 
             <div className="profile-container">
                 <section className="user-info">
                     <h2>Personal Information</h2>
                     <div className="info-card">
-                        <div className="info-item">
-                            <span className="info-label">Name:</span>
-                            <span className="info-value">{user?.userName || 'User'}</span>
-                        </div>
-                        <div className="info-item">
-                            <span className="info-label">Email:</span>
-                            <span className="info-value">{user?.email}</span>
+                        <div className="info-row">
+                            <div className="info-item">
+                                <div className="info-icon">👤</div>
+                                <div className="info-content">
+                                    <span className="info-label">Full Name</span>
+                                    <span className="info-value">{user?.userName || 'User'}</span>
+                                </div>
+                            </div>
+                            <div className="info-item">
+                                <div className="info-icon">📧</div>
+                                <div className="info-content">
+                                    <span className="info-label">Email Address</span>
+                                    <span className="info-value">{user?.email}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -65,7 +75,10 @@ const Profile = () => {
                     <h2>My Appointments</h2>
 
                     {loading ? (
-                        <p>Loading appointments...</p>
+                        <div className="loading-state">
+                            <div className="loader-spinner"></div>
+                            <p>Loading appointments...</p>
+                        </div>
                     ) : appointments.length > 0 ? (
                         <div className="appointments-list">
                             {appointments.map((appointment) => (
@@ -87,7 +100,9 @@ const Profile = () => {
                         </div>
                     ) : (
                         <div className="no-appointments">
-                            <p>No appointments yet</p>
+                            <div className="no-appointments-icon">📅</div>
+                            <h3>No Appointments Yet</h3>
+                            <p>You haven't booked any appointments. Start your beauty journey today!</p>
                             <button onClick={() => navigate('/services')} className="book-now-btn">
                                 Book an Appointment
                             </button>

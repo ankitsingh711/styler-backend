@@ -2,15 +2,16 @@ const express = require("express");
 require("dotenv").config();
 const { UserModel } = require("../Model/UserModel");
 const { StylerModel } = require("../Model/StylerModel");
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const fs=require("fs");
+const path = require("path");
 const { AppointmentModel } = require("../Model/AppointmentModel");
 const { BlockUserModel } = require("../Model/BlockUserModel");
 const {StylesModel}=require("../Model/Styles")
 const statusemail = require("../config/statusemail");
 const { authorization } = require("../Middleware/Authorization");
 const { authenticate } = require("../Middleware/Authentication");
+const { generateTokenPair, verifyRefreshToken } = require("../utils/jwtHelper");
 const AdminRouter = express.Router();
 
 // ************REGISTER ADMIN***************
@@ -46,34 +47,83 @@ AdminRouter.post("/register", async (req, res) => {
 AdminRouter.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
-    let blockmails = await BlockUserModel.find();
-    let flag = true;
-    for (let k = 0; k < blockmails.length; k++) {
-        if (email == blockmails[k].Email) {
-            flag = false;
+    try {
+        // Validate input
+        if (!email || !password) {
+            return res.status(400).json({ 
+                success: false,
+                message: "Email and password are required" 
+            });
         }
-    };
-    if (flag == true) {
-        try {
-            let User = await UserModel.findOne({ email: email });
-            if (User) {
-                bcrypt.compare(password, User.password, async (err, result) => {
-                    if (result) {
-                        const token = jwt.sign({ userID: User._id, role:User.role }, "9168");
-                        console.log("Login Sucessfull");
-                        res.send({ message: "Login Sucessfull", token: token });
-                    } else {
-                        res.send({ message: "Wrong Password" });
-                    }
-                });
-            } else {
-                res.send({ message: "Sign Up First" });
-            }
-        } catch (error) {
-            res.send({ message: error.message });
+
+        // Check if email is blocked
+        let blockmails = await BlockUserModel.find();
+        let isBlocked = blockmails.some(blocked => blocked.Email === email);
+        
+        if (isBlocked) {
+            return res.status(403).json({ 
+                success: false,
+                message: "Email is blocked. Please contact support." 
+            });
         }
-    } else {
-        res.send({ message: "Email is Blocked" })
+
+        // Find user
+        let User = await UserModel.findOne({ email: email });
+        
+        if (!User) {
+            return res.status(404).json({ 
+                success: false,
+                message: "User not found. Please register first." 
+            });
+        }
+
+        // Verify admin role
+        if (User.role !== 'admin') {
+            return res.status(403).json({ 
+                success: false,
+                message: "Unauthorized. Admin access only." 
+            });
+        }
+
+        // Compare password
+        const isPasswordValid = await bcrypt.compare(password, User.password);
+        
+        if (!isPasswordValid) {
+            return res.status(401).json({ 
+                success: false,
+                message: "Invalid password" 
+            });
+        }
+
+        // Generate tokens
+        const tokenPayload = {
+            userID: User._id,
+            role: User.role,
+            email: User.email
+        };
+
+        const { accessToken, refreshToken } = generateTokenPair(tokenPayload);
+
+        console.log("Admin login successful for:", email);
+
+        // Send response
+        res.status(200).json({ 
+            success: true,
+            message: "Login successful",
+            token: accessToken,
+            refreshToken: refreshToken,
+            username: User.name,
+            email: User.email,
+            userType: User.role
+        });
+
+    } catch (error) {
+        console.error("Admin login error:", error.message);
+        res.status(500).json({ 
+            success: false,
+            message: "Login failed. Please try again.",
+            error: error.message 
+        });
     }
 });
 AdminRouter.use(authenticate);

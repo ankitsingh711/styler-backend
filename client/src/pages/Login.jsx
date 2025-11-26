@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { USER_TYPES } from '../utils/constants';
 import './Login.css';
 
-const Login = () => {
-    const [isLogin, setIsLogin] = useState(true);
+const Login = ({ isRegisterMode = false }) => {
+    const [isLogin, setIsLogin] = useState(!isRegisterMode);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -14,23 +15,21 @@ const Login = () => {
         phone: '',
     });
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
 
     const navigate = useNavigate();
     const { login: authLogin } = useAuth();
+    const { success, error: showError } = useToast();
 
     const handleChange = (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
         });
-        setError('');
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError('');
 
         try {
             if (isLogin) {
@@ -42,12 +41,17 @@ const Login = () => {
 
                 authLogin({
                     token: response.token,
+                    refreshToken: response.refreshToken,
                     email: formData.email,
                     userType: USER_TYPES.USER,
                     name: response.username || formData.email,
                 });
 
-                navigate('/profile');
+                success('Login successful! Welcome back.');
+                
+                setTimeout(() => {
+                    navigate('/profile');
+                }, 500);
             } else {
                 // Register
                 const response = await authService.register({
@@ -61,19 +65,25 @@ const Login = () => {
                 if (response.token) {
                     authLogin({
                         token: response.token,
+                        refreshToken: response.refreshToken,
                         email: formData.email,
                         userType: USER_TYPES.USER,
                         name: formData.name,
                     });
-                    navigate('/profile');
+                    success('Account created successfully! Welcome aboard.');
+                    
+                    setTimeout(() => {
+                        navigate('/profile');
+                    }, 500);
                 } else {
                     // If no auto-login, switch to login form
                     setIsLogin(true);
-                    setError('Registration successful! Please login.');
+                    success('Registration successful! Please login.');
                 }
             }
         } catch (err) {
-            setError(err.response?.data?.message || 'An error occurred. Please try again.');
+            const errorMessage = err.response?.data?.message || 'An error occurred. Please try again.';
+            showError(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -90,25 +100,17 @@ const Login = () => {
                 <div className="login-tabs">
                     <button
                         className={isLogin ? 'active' : ''}
-                        onClick={() => {
-                            setIsLogin(true);
-                            setError('');
-                        }}
+                        onClick={() => setIsLogin(true)}
                     >
                         Login
                     </button>
                     <button
                         className={!isLogin ? 'active' : ''}
-                        onClick={() => {
-                            setIsLogin(false);
-                            setError('');
-                        }}
+                        onClick={() => setIsLogin(false)}
                     >
                         Sign Up
                     </button>
                 </div>
-
-                {error && <div className="error-message">{error}</div>}
 
                 <form onSubmit={handleSubmit} className="login-form">
                     {!isLogin && (

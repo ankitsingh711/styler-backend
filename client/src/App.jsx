@@ -1,11 +1,14 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import Loader from './components/common/Loader';
+import ToastContainer from './components/common/ToastContainer';
 
 // Pages
 import Home from './pages/Home';
+import About from './pages/About';
 import Login from './pages/Login';
 import Services from './pages/Services';
 import Profile from './pages/Profile';
@@ -35,10 +38,10 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
 };
 
 // Layout Component
-const Layout = ({ children, showFooter = true }) => {
+const Layout = ({ children, showFooter = true, showNavbar = true }) => {
   return (
     <div className="app-layout">
-      <Navbar />
+      {showNavbar && <Navbar />}
       <main>{children}</main>
       {showFooter && <Footer />}
     </div>
@@ -48,10 +51,13 @@ const Layout = ({ children, showFooter = true }) => {
 function AppContent() {
   return (
     <Router>
+      <ToastContainer />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Layout><Home /></Layout>} />
+        <Route path="/about" element={<Layout><About /></Layout>} />
         <Route path="/login" element={<Layout showFooter={false}><Login /></Layout>} />
+        <Route path="/register" element={<Layout showFooter={false}><Login isRegisterMode={true} /></Layout>} />
         <Route path="/services" element={<Layout><Services /></Layout>} />
 
         {/* Protected User Routes */}
@@ -67,7 +73,7 @@ function AppContent() {
         />
 
         {/* Admin Routes */}
-        <Route path="/admin/login" element={<Layout showFooter={false}><AdminLogin /></Layout>} />
+        <Route path="/admin/login" element={<Layout showFooter={false} showNavbar={false}><AdminLogin /></Layout>} />
         <Route
           path="/admin/dashboard"
           element={
@@ -129,7 +135,9 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <ToastProvider>
+        <AppContent />
+      </ToastProvider>
     </AuthProvider>
   );
 }

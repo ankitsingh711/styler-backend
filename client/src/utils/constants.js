@@ -21,10 +21,11 @@ export const API_ENDPOINTS = {
 
 // Local Storage Keys
 export const STORAGE_KEYS = {
-  TOKEN: 'token',
-  EMAIL: 'email',
-  USER_TYPE: 'userType',
-  USER_NAME: 'userName',
+  TOKEN: 'styler_token',
+  REFRESH_TOKEN: 'styler_refresh_token',
+  EMAIL: 'styler_email',
+  USER_TYPE: 'styler_user_type',
+  USER_NAME: 'styler_user_name',
 };
 
 // User Types

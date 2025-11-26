@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../services/authService';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { USER_TYPES } from '../../utils/constants';
 import './AdminLogin.css';
 
@@ -11,23 +12,21 @@ const AdminLogin = () => {
         password: '',
     });
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
 
     const navigate = useNavigate();
     const { login } = useAuth();
+    const { success, error: showError } = useToast();
 
     const handleChange = (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
         });
-        setError('');
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError('');
 
         try {
             const response = await authService.adminLogin({
@@ -37,14 +36,20 @@ const AdminLogin = () => {
 
             login({
                 token: response.token,
+                refreshToken: response.refreshToken,
                 email: formData.email,
                 userType: USER_TYPES.ADMIN,
-                name: 'Admin',
+                name: response.username || 'Admin',
             });
 
-            navigate('/admin/dashboard');
+            success('Admin login successful! Welcome back.');
+            
+            setTimeout(() => {
+                navigate('/admin/dashboard');
+            }, 500);
         } catch (err) {
-            setError(err.response?.data?.message || 'Invalid admin credentials');
+            const errorMessage = err.response?.data?.message || 'Invalid admin credentials';
+            showError(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -57,8 +62,6 @@ const AdminLogin = () => {
                     <h1>Admin Login</h1>
                     <p>Access the admin dashboard</p>
                 </div>
-
-                {error && <div className="error-message">{error}</div>}
 
                 <form onSubmit={handleSubmit} className="admin-login-form">
                     <div className="form-group">

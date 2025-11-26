@@ -66,22 +66,17 @@ const Home = () => {
                         With over 162 branches nationally and internationally, Styler salon is a premium beauty salon
                         for men and women who desire to look the best every day. Getting a makeover not only changes
                         the appearance of a person but also brings back the lost confidence and Styler Salon would take
-                        pride in being a part of it. From beauty to grooming services, we provide a tremendous range of
-                        facilities that touches every dimension of beauty and hair treatments. Our repertoire of professional
-                        experts makes sure that all your beauty and hair questions are answered, and you leave the salon
-                        with a big smile on your face.
+                        pride in being a part of it.
                     </p>
                     <p>
                         With over 6000 employees engaged in transforming your look, we make sure that all the services
-                        provided at our salons meet the international standards. Through our advice and solutions from
-                        the expertise in this array, we aim at giving the best services through our state-of-art facilities.
-                        Our professional stylists and beauty experts are constantly updated with the latest trends and
-                        fashion advices that help them to work efficiently and deliver outstanding results!
+                        provided at our salons meet the international standards. Our professional stylists and beauty 
+                        experts are constantly updated with the latest trends and fashion advices that help them to 
+                        work efficiently and deliver outstanding results!
                     </p>
-                    <p>
-                        Give us an opportunity to serve you once, we are sure you'll love to come back to us again and
-                        be our esteemed customer forever. Fill the form or call us to book an appointment now!
-                    </p>
+                    <Link to="/about" className="about-learn-more">
+                        Learn More About Us
+                    </Link>
                 </div>
             </section>
 

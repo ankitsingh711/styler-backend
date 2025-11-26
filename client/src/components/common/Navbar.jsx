@@ -33,21 +33,28 @@ const Navbar = () => {
 
             <nav className={`nav-bar ${isMenuOpen ? 'active' : ''}`}>
                 <ul>
-                    <li><Link to="/">Home</Link></li>
-                    <li><a href="#about">About Us</a></li>
-                    <li><Link to="/services">Services</Link></li>
-
                     {!isAuthenticated() ? (
-                        <li><Link to="/login">Signup/Login</Link></li>
-                    ) : isAdmin() ? (
                         <>
-                            <li><Link to="/admin/dashboard">Dashboard</Link></li>
-                            <li><button onClick={handleLogout} className="logout-btn">Logout</button></li>
+                            <li><Link to="/login">Login</Link></li>
+                            <li><Link to="/register">Register</Link></li>
                         </>
                     ) : (
                         <>
-                            <li><Link to="/profile">My Profile</Link></li>
-                            <li><button onClick={handleLogout} className="logout-btn">Logout</button></li>
+                            <li><Link to="/">Home</Link></li>
+                            <li><Link to="/about">About Us</Link></li>
+                            <li><Link to="/services">Services</Link></li>
+                            
+                            {isAdmin() ? (
+                                <>
+                                    <li><Link to="/admin/dashboard">Dashboard</Link></li>
+                                    <li><button onClick={handleLogout} className="logout-btn">Logout</button></li>
+                                </>
+                            ) : (
+                                <>
+                                    <li><Link to="/profile">My Profile</Link></li>
+                                    <li><button onClick={handleLogout} className="logout-btn">Logout</button></li>
+                                </>
+                            )}
                         </>
                     )}
                 </ul>

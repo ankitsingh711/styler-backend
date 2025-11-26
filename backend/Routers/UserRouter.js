@@ -2,14 +2,16 @@
 require("dotenv").config();
 const { UserModel } = require("../Model/UserModel");
 const client=require("../config/redis");
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const fs = require("fs");
+const path = require("path");
 const UserRouter = express.Router();
 const { authenticate } = require("../Middleware/Authentication");
 const { StylerModel } = require("../Model/StylerModel");
 const { AppointmentModel } = require("../Model/AppointmentModel");
-const {BlockUserModel}=require("../Model/BlockUserModel")
+const {BlockUserModel}=require("../Model/BlockUserModel");
 const otpvalidator = require("../config/OTP");
+const { generateTokenPair, verifyRefreshToken } = require("../utils/jwtHelper");
 
 
 const app = express()
@@ -53,46 +55,143 @@ UserRouter.post("/register", async (req, res) => {
 
 UserRouter.post("/login", async (req, res) => {
     const { email, password } = req.body;
-    let blockmails=await BlockUserModel.find();
-    // console.log(blockmails);
-    let flag=true;
-    for( let k=0;k<blockmails.length;k++){
-        if(email==blockmails[k].Email){
-           flag=false;
-        }
-    };
-    if(flag==true){
-        try {
-            let User = await UserModel.findOne({ email: email });
-            if (User) {
-                bcrypt.compare(password, User.password, async (err, result) => {
-                    if (result) {
-                        const token = jwt.sign({ userID: User._id, role: User.role }, "9168");
-                        //Store In Cookies
-                        // client.set("token", token);
-                        console.log("Login Sucessfull");
-                        res.send({ message: "Login Sucessfull", token: token ,username:User.name});
-                    } else {
-                        res.send({ message: "Wrong Password" });
-                    }
-                });
-            } else {
-                res.send({ message: "Sign Up First" });
-            }
-        } catch (error) {
-            res.send({ message: error.message });
-        }
-    }else{
-        res.send({message:"Email is Blocked"})
-    }
-    
 
+    try {
+        // Validate input
+        if (!email || !password) {
+            return res.status(400).json({ 
+                success: false,
+                message: "Email and password are required" 
+            });
+        }
+
+        // Check if email is blocked
+        let blockmails = await BlockUserModel.find();
+        let isBlocked = blockmails.some(blocked => blocked.Email === email);
+        
+        if (isBlocked) {
+            return res.status(403).json({ 
+                success: false,
+                message: "Email is blocked. Please contact support." 
+            });
+        }
+
+        // Find user
+        let User = await UserModel.findOne({ email: email });
+        
+        if (!User) {
+            return res.status(404).json({ 
+                success: false,
+                message: "User not found. Please sign up first." 
+            });
+        }
+
+        // Compare password
+        const isPasswordValid = await bcrypt.compare(password, User.password);
+        
+        if (!isPasswordValid) {
+            return res.status(401).json({ 
+                success: false,
+                message: "Invalid password" 
+            });
+        }
+
+        // Generate tokens
+        const tokenPayload = {
+            userID: User._id,
+            role: User.role || 'user',
+            email: User.email
+        };
+
+        const { accessToken, refreshToken } = generateTokenPair(tokenPayload);
+
+        console.log("Login successful for user:", email);
+
+        // Send response
+        res.status(200).json({ 
+            success: true,
+            message: "Login successful",
+            token: accessToken,
+            refreshToken: refreshToken,
+            username: User.name,
+            email: User.email,
+            userType: User.role || 'user'
+        });
+
+    } catch (error) {
+        console.error("Login error:", error.message);
+        res.status(500).json({ 
+            success: false,
+            message: "Login failed. Please try again.",
+            error: error.message 
+        });
+    }
 });
+
+// **************REFRESH TOKEN*****************
+UserRouter.post("/refresh-token", async (req, res) => {
+    const { refreshToken } = req.body;
+
+    try {
+        if (!refreshToken) {
+            return res.status(401).json({
+                success: false,
+                message: "Refresh token is required"
+            });
+        }
+
+        // Verify refresh token
+        const decoded = verifyRefreshToken(refreshToken);
+
+        if (!decoded) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid refresh token"
+            });
+        }
+
+        // Check if user still exists
+        const user = await UserModel.findById(decoded.userID);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        // Generate new token pair
+        const tokenPayload = {
+            userID: user._id,
+            role: user.role || 'user',
+            email: user.email
+        };
+
+        const { accessToken, refreshToken: newRefreshToken } = generateTokenPair(tokenPayload);
+
+        res.status(200).json({
+            success: true,
+            message: "Token refreshed successfully",
+            token: accessToken,
+            refreshToken: newRefreshToken
+        });
+
+    } catch (error) {
+        console.error("Refresh token error:", error.message);
+        res.status(401).json({
+            success: false,
+            message: "Invalid or expired refresh token",
+            error: error.message
+        });
+    }
+});
+
 UserRouter.get("/userInfo", async (req, res) => {
     let search = req.query
     let data = await UserModel.find(search)
     res.send(data);
 });
+
+// Apply authentication middleware to all routes below this point
 UserRouter.use(authenticate)
 //*******Check avalibility ***********/
 UserRouter.post("/Check",async(req,res)=>{

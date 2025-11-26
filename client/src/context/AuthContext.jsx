@@ -25,24 +25,35 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = (userData) => {
-        const { token, email, userType = USER_TYPES.USER, name } = userData;
+        const { token, refreshToken, email, userType = USER_TYPES.USER, name, username } = userData;
 
-        localStorage.setItem(STORAGE_KEYS.TOKEN, token);
-        localStorage.setItem(STORAGE_KEYS.EMAIL, email);
+        // Store all authentication data
+        if (token) {
+            localStorage.setItem(STORAGE_KEYS.TOKEN, token);
+        }
+        if (refreshToken) {
+            localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
+        }
+        if (email) {
+            localStorage.setItem(STORAGE_KEYS.EMAIL, email);
+        }
         localStorage.setItem(STORAGE_KEYS.USER_TYPE, userType);
-        if (name) {
-            localStorage.setItem(STORAGE_KEYS.USER_NAME, name);
+        
+        const displayName = name || username || email;
+        if (displayName) {
+            localStorage.setItem(STORAGE_KEYS.USER_NAME, displayName);
         }
 
         setUser({
             email,
             userType,
-            userName: name || email,
+            userName: displayName,
         });
     };
 
     const logout = () => {
         localStorage.removeItem(STORAGE_KEYS.TOKEN);
+        localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
         localStorage.removeItem(STORAGE_KEYS.EMAIL);
         localStorage.removeItem(STORAGE_KEYS.USER_TYPE);
         localStorage.removeItem(STORAGE_KEYS.USER_NAME);

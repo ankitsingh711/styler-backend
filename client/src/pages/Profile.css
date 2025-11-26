@@ -1,37 +1,48 @@
 .profile-page {
     min-height: 100vh;
-    background-color: #f8f9fa;
+    background: var(--gray-50);
     padding-bottom: 3rem;
 }
 
 .profile-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--primary-gradient);
     color: white;
-    padding: 3rem 5%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    padding: 3rem 5% 2.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-header::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -15%;
+    width: 500px;
+    height: 500px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    filter: blur(80px);
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
 .profile-header h1 {
-    font-size: 2.5rem;
+    font-size: clamp(2rem, 5vw, 2.5rem);
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    animation: fadeIn 0.6s ease-out;
 }
 
-.logout-btn {
-    padding: 0.8rem 2rem;
-    background: rgba(255, 255, 255, 0.2);
-    border: 2px solid white;
-    color: white;
-    border-radius: 10px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.logout-btn:hover {
-    background: white;
-    color: #667eea;
+.profile-header p {
+    font-size: clamp(1rem, 2vw, 1.15rem);
+    opacity: 0.95;
+    font-weight: 400;
+    animation: fadeIn 0.8s ease-out;
 }
 
 .profile-container {
@@ -39,166 +50,371 @@
     margin: 0 auto;
     padding: 3rem 5%;
     display: grid;
-    gap: 2rem;
+    gap: 3rem;
 }
 
 .user-info h2,
 .appointments-section h2 {
-    font-size: 1.8rem;
-    margin-bottom: 1.5rem;
-    color: #333;
+    font-size: clamp(1.5rem, 3vw, 1.875rem);
+    margin-bottom: 2rem;
+    color: var(--text-dark);
+    font-weight: 800;
+    position: relative;
+    padding-bottom: 0.75rem;
+}
+
+.user-info h2::after,
+.appointments-section h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: var(--primary-gradient);
+    border-radius: var(--radius-full);
 }
 
 .info-card {
     background: white;
-    padding: 2rem;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    padding: 0;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-200);
+    animation: fadeIn 0.6s ease-out;
+    overflow: hidden;
+}
+
+.info-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 0;
 }
 
 .info-item {
     display: flex;
-    justify-content: space-between;
-    padding: 1rem 0;
-    border-bottom: 1px solid #f0f0f0;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 2rem 2.5rem;
+    border-right: 2px solid var(--gray-100);
+    transition: all var(--transition-base);
 }
 
 .info-item:last-child {
-    border-bottom: none;
+    border-right: none;
+}
+
+.info-item:hover {
+    background: var(--gray-50);
+}
+
+.info-icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+}
+
+.info-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
 }
 
 .info-label {
     font-weight: 600;
-    color: #667eea;
+    color: var(--text-light);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .info-value {
-    color: #333;
+    color: var(--text-dark);
+    font-weight: 600;
+    font-size: 1.125rem;
+    word-break: break-word;
+}
+
+.loading-state {
+    background: white;
+    padding: 4rem 3rem;
+    border-radius: var(--radius-lg);
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-200);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.loader-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--gray-200);
+    border-top-color: var(--primary-purple);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-state p {
+    font-size: 1.125rem;
+    color: var(--text-light);
+    margin: 0;
 }
 
 .appointments-list {
     display: grid;
-    gap: 1.5rem;
+    gap: 2rem;
 }
 
 .appointment-card {
     background: white;
-    padding: 2rem;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
+    padding: 2.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+    transition: all var(--transition-base);
+    animation: fadeIn 0.5s ease-out backwards;
 }
 
+.appointment-card:nth-child(1) { animation-delay: 0.1s; }
+.appointment-card:nth-child(2) { animation-delay: 0.15s; }
+.appointment-card:nth-child(3) { animation-delay: 0.2s; }
+.appointment-card:nth-child(4) { animation-delay: 0.25s; }
+
 .appointment-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-purple);
 }
 
 .appointment-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 2px solid var(--gray-100);
 }
 
 .appointment-header h3 {
-    color: #667eea;
-    font-size: 1.3rem;
+    color: var(--primary-purple);
+    font-size: 1.4rem;
+    font-weight: 700;
 }
 
 .status {
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 600;
+    padding: 0.625rem 1.25rem;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 700;
     text-transform: capitalize;
+    letter-spacing: 0.5px;
 }
 
 .status.pending {
-    background: #fff3cd;
+    background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
     color: #856404;
 }
 
 .status.confirmed {
-    background: #d4edda;
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
     color: #155724;
 }
 
 .status.completed {
-    background: #d1ecf1;
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
     color: #0c5460;
 }
 
 .status.cancelled {
-    background: #f8d7da;
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
     color: #721c24;
 }
 
+.appointment-details {
+    display: grid;
+    gap: 0.875rem;
+}
+
 .appointment-details p {
-    margin: 0.5rem 0;
-    color: #666;
-    font-size: 1rem;
+    margin: 0;
+    color: var(--text-light);
+    font-size: 1.05rem;
+    line-height: 1.6;
 }
 
 .appointment-details strong {
-    color: #333;
+    color: var(--text-dark);
+    font-weight: 600;
 }
 
 .no-appointments {
     background: white;
-    padding: 3rem;
-    border-radius: 15px;
+    padding: 5rem 3rem;
+    border-radius: var(--radius-lg);
     text-align: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-200);
+    animation: fadeIn 0.6s ease-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.no-appointments-icon {
+    font-size: 5rem;
+    opacity: 0.8;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.no-appointments h3 {
+    font-size: 1.75rem;
+    color: var(--text-dark);
+    font-weight: 700;
+    margin: 0;
 }
 
 .no-appointments p {
-    font-size: 1.2rem;
-    color: #666;
-    margin-bottom: 1.5rem;
+    font-size: 1.125rem;
+    color: var(--text-light);
+    margin: 0 0 1rem 0;
+    max-width: 500px;
+    line-height: 1.6;
 }
 
 .book-now-btn {
-    padding: 1rem 2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1rem 2.5rem;
+    background: var(--primary-gradient);
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-md);
 }
 
 .book-now-btn:hover {
+    background: var(--primary-gradient-hover);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    box-shadow: var(--shadow-purple);
+}
+
+.book-now-btn:active {
+    transform: translateY(0);
 }
 
 @media (max-width: 768px) {
     .profile-header {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
+        padding: 2.5rem 5%;
     }
 
-    .profile-header h1 {
-        font-size: 2rem;
+    .profile-container {
+        padding: 2.5rem 5%;
+        gap: 2.5rem;
+    }
+
+    .info-row {
+        grid-template-columns: 1fr;
     }
 
     .info-item {
-        flex-direction: column;
-        gap: 0.5rem;
-        text-align: left;
+        border-right: none;
+        border-bottom: 2px solid var(--gray-100);
+        padding: 1.75rem 2rem;
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-icon {
+        font-size: 2rem;
+    }
+
+    .appointment-card {
+        padding: 2rem;
     }
 
     .appointment-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
+    }
+
+    .appointments-list {
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-header {
+        padding: 2rem 5%;
+    }
+
+    .profile-container {
+        padding: 2rem 5%;
+        gap: 2rem;
+    }
+
+    .info-item {
+        padding: 1.5rem 1.75rem;
+        gap: 1rem;
+    }
+
+    .info-icon {
+        font-size: 1.75rem;
+    }
+
+    .info-value {
+        font-size: 1rem;
+    }
+
+    .appointment-card {
+        padding: 1.75rem;
+    }
+
+    .no-appointments {
+        padding: 4rem 2rem;
+    }
+
+    .no-appointments-icon {
+        font-size: 4rem;
+    }
+
+    .no-appointments h3 {
+        font-size: 1.5rem;
+    }
+
+    .no-appointments p {
+        font-size: 1rem;
+    }
+
+    .book-now-btn {
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
+    }
+
+    .loading-state {
+        padding: 3rem 2rem;
     }
 }
