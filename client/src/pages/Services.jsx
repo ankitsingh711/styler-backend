@@ -27,14 +27,9 @@ const Services = () => {
                 bookingService.getStylers(),
                 bookingService.getServices(),
             ]);
-            console.log('Stylers Data:', stylersData);
-            console.log('Services Data:', servicesData);
 
             const stylersList = stylersData.data || stylersData || [];
             const servicesList = servicesData.data || servicesData || [];
-
-            console.log('Extracted Stylers:', stylersList);
-            console.log('Extracted Services:', servicesList);
 
             setStylers(stylersList);
             setServices(servicesList);
@@ -129,7 +124,6 @@ const Services = () => {
                                 required
                             >
                                 <option value="">Choose a styler</option>
-                                {console.log('Rendering stylers, count:', stylers.length, stylers)}
                                 {stylers.map((styler) => (
                                     <option key={styler._id} value={styler._id}>
                                         {styler.name} - {styler.specialization || 'Expert Styler'}
