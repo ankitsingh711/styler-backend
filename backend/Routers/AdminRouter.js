@@ -3,11 +3,11 @@ require("dotenv").config();
 const { UserModel } = require("../Model/UserModel");
 const { StylerModel } = require("../Model/StylerModel");
 const bcrypt = require("bcrypt");
-const fs=require("fs");
+const fs = require("fs");
 const path = require("path");
 const { AppointmentModel } = require("../Model/AppointmentModel");
 const { BlockUserModel } = require("../Model/BlockUserModel");
-const {StylesModel}=require("../Model/Styles")
+const { StylesModel } = require("../Model/Styles")
 const statusemail = require("../config/statusemail");
 const { authorization } = require("../Middleware/Authorization");
 const { authenticate } = require("../Middleware/Authentication");
@@ -50,48 +50,48 @@ AdminRouter.post("/login", async (req, res) => {
     try {
         // Validate input
         if (!email || !password) {
-            return res.status(400).json({ 
+            return res.status(400).json({
                 success: false,
-                message: "Email and password are required" 
+                message: "Email and password are required"
             });
         }
 
         // Check if email is blocked
         let blockmails = await BlockUserModel.find();
         let isBlocked = blockmails.some(blocked => blocked.Email === email);
-        
+
         if (isBlocked) {
-            return res.status(403).json({ 
+            return res.status(403).json({
                 success: false,
-                message: "Email is blocked. Please contact support." 
+                message: "Email is blocked. Please contact support."
             });
         }
 
         // Find user
         let User = await UserModel.findOne({ email: email });
-        
+
         if (!User) {
-            return res.status(404).json({ 
+            return res.status(404).json({
                 success: false,
-                message: "User not found. Please register first." 
+                message: "User not found. Please register first."
             });
         }
 
         // Verify admin role
         if (User.role !== 'admin') {
-            return res.status(403).json({ 
+            return res.status(403).json({
                 success: false,
-                message: "Unauthorized. Admin access only." 
+                message: "Unauthorized. Admin access only."
             });
         }
 
         // Compare password
         const isPasswordValid = await bcrypt.compare(password, User.password);
-        
+
         if (!isPasswordValid) {
-            return res.status(401).json({ 
+            return res.status(401).json({
                 success: false,
-                message: "Invalid password" 
+                message: "Invalid password"
             });
         }
 
@@ -107,7 +107,7 @@ AdminRouter.post("/login", async (req, res) => {
         console.log("Admin login successful for:", email);
 
         // Send response
-        res.status(200).json({ 
+        res.status(200).json({
             success: true,
             message: "Login successful",
             token: accessToken,
@@ -119,13 +119,78 @@ AdminRouter.post("/login", async (req, res) => {
 
     } catch (error) {
         console.error("Admin login error:", error.message);
-        res.status(500).json({ 
+        res.status(500).json({
             success: false,
             message: "Login failed. Please try again.",
-            error: error.message 
+            error: error.message
         });
     }
 });
+
+// ************PUBLIC ENDPOINTS (No Auth Required)************
+
+// Get all stylers - Public endpoint for booking page
+AdminRouter.get("/stylers", async (req, res) => {
+    try {
+        const stylers = await StylerModel.find();
+
+        // Transform data to match frontend expectations
+        const transformedStylers = stylers.map(styler => ({
+            _id: styler._id,
+            name: styler.Styler_name || styler.name,
+            specialization: styler.specialization || 'Expert Styler',
+            city: styler.city,
+            email: styler.email,
+            mob_no: styler.mob_no
+        }));
+
+        res.status(200).json({
+            success: true,
+            data: transformedStylers
+        });
+    } catch (error) {
+        console.error("Error fetching stylers:", error.message);
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch stylers",
+            error: error.message
+        });
+    }
+});
+
+// Get all services - Public endpoint for booking page
+AdminRouter.get("/services", async (req, res) => {
+    try {
+        const services = await StylesModel.find();
+
+        // Transform data to match frontend expectations
+        const transformedServices = services.map(service => ({
+            _id: service._id,
+            name: service.name,
+            serviceName: service.name, // Alias for compatibility
+            price: service.price,
+            amount: service.price, // Alias for compatibility
+            description: service.category || 'Premium grooming service',
+            category: service.category,
+            image: service.image,
+            forGender: service.ForGender
+        }));
+
+        res.status(200).json({
+            success: true,
+            data: transformedServices
+        });
+    } catch (error) {
+        console.error("Error fetching services:", error.message);
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch services",
+            error: error.message
+        });
+    }
+});
+
+// ************PROTECTED ENDPOINTS (Auth Required)************
 AdminRouter.use(authenticate);
 AdminRouter.use(authorization("admin"))
 
@@ -204,40 +269,40 @@ AdminRouter.patch("/update/appointment/:id", async (req, res) => {
 
 // ************ALL STYLES*****************
 
-AdminRouter.get("/styles",async (req,res)=>{
-    let allstyles=await StylesModel.find();
+AdminRouter.get("/styles", async (req, res) => {
+    let allstyles = await StylesModel.find();
     res.status(200).send(allstyles)
 })
 
 // ************ADD STYLES*****************
 
-AdminRouter.post("/styles/add",async (req,res)=>{
-    let payload=req.body;
-    let style=await new StylesModel(payload);
+AdminRouter.post("/styles/add", async (req, res) => {
+    let payload = req.body;
+    let style = await new StylesModel(payload);
     style.save()
-    res.status(200).send({"msg":"New Style added"})
+    res.status(200).send({ "msg": "New Style added" })
 })
 
 // ************UPDATE STYLES*****************
 
-AdminRouter.patch("/styles/update/:id",async (req,res)=>{
-    let id=req.params.id;
-    let payload=req.body;
-    await StylesModel.updateOne({"_id":id},payload)
-    res.status(200).send({"msg":"New Style Updated"})
+AdminRouter.patch("/styles/update/:id", async (req, res) => {
+    let id = req.params.id;
+    let payload = req.body;
+    await StylesModel.updateOne({ "_id": id }, payload)
+    res.status(200).send({ "msg": "New Style Updated" })
 })
-AdminRouter.delete("/styles/delete/:id",async (req,res)=>{
-    let id=req.params.id;
-    await StylesModel.deleteOne({"_id":id})
-    res.status(200).send({"msg":"New Style Delete"})
+AdminRouter.delete("/styles/delete/:id", async (req, res) => {
+    let id = req.params.id;
+    await StylesModel.deleteOne({ "_id": id })
+    res.status(200).send({ "msg": "New Style Delete" })
 })
 
 /*******Logout *******/
-AdminRouter.get("/logout",(req,res)=>{
-    const token =req.headers.authorization
-    const blacklist=JSON.parse(fs.readFileSync("./blacklisted.json",{encoding:"utf-8"}));
+AdminRouter.get("/logout", (req, res) => {
+    const token = req.headers.authorization
+    const blacklist = JSON.parse(fs.readFileSync("./blacklisted.json", { encoding: "utf-8" }));
     blacklist.push(token);
-    fs.writeFileSync("./blacklist.json",JSON.stringify(blacklist));
+    fs.writeFileSync("./blacklist.json", JSON.stringify(blacklist));
     res.send("you are logged out")
 })
 
