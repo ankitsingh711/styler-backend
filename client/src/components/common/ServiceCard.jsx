@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { Card, CardContent, CardMedia, CardActions, Typography, Button, Box, Chip } from '@mui/material';
 import { motion } from 'framer-motion';
 import { ContentCut } from '@mui/icons-material';
 
 const ServiceCard = ({ service, onBook }) => {
     const { name, serviceName, price, amount, description, image } = service;
+    const [imageError, setImageError] = useState(false);
 
     const displayName = name || serviceName;
     const displayPrice = price || amount;
@@ -17,6 +19,7 @@ const ServiceCard = ({ service, onBook }) => {
             <Card
                 sx={{
                     height: '100%',
+                    minHeight: 420,
                     display: 'flex',
                     flexDirection: 'column',
                     position: 'relative',
@@ -28,13 +31,14 @@ const ServiceCard = ({ service, onBook }) => {
                     },
                 }}
             >
-                {image ? (
+                {image && !imageError ? (
                     <CardMedia
                         component="img"
                         height="200"
                         image={image}
                         alt={displayName}
                         className="service-image"
+                        onError={() => setImageError(true)}
                         sx={{
                             transition: 'transform 0.4s ease',
                         }}
@@ -67,10 +71,22 @@ const ServiceCard = ({ service, onBook }) => {
                 </Box>
 
                 <CardContent sx={{ flexGrow: 1, pt: 3 }}>
-                    <Typography gutterBottom variant="h5" component="h3" fontWeight={700}>
+                    <Typography gutterBottom variant="h5" component="h3" fontWeight={700} sx={{ minHeight: 64 }}>
                         {displayName}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                            mt: 1,
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            minHeight: 40,
+                        }}
+                    >
                         {description || 'Premium grooming service tailored for you'}
                     </Typography>
                 </CardContent>

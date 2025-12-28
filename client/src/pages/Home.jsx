@@ -179,11 +179,43 @@ const Home = () => {
             {/* Stats Section */}
             <Container sx={{ py: { xs: 6, md: 8 }, mt: { xs: -4, md: -6 }, position: 'relative', zIndex: 2 }}>
                 <Grid container spacing={3}>
-                    {stats.map((stat, index) => (
-                        <Grid item xs={12} sm={6} md={4} key={index}>
-                            <StatCard {...stat} />
-                        </Grid>
-                    ))}
+                    {stats.map((stat, index) => {
+                        const IconComp = stat.icon;
+                        return (
+                            <Grid item xs={12} sm={6} md={4} key={index}>
+                                <Paper
+                                    elevation={2}
+                                    sx={{
+                                        p: 3,
+                                        background: `linear-gradient(135deg, ${stat.color}15 0%, ${stat.color}05 100%)`,
+                                        border: `1px solid ${stat.color}30`,
+                                    }}
+                                >
+                                    <Box
+                                        sx={{
+                                            width: 56,
+                                            height: 56,
+                                            borderRadius: 2,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            bgcolor: stat.color,
+                                            color: 'white',
+                                            mb: 2,
+                                        }}
+                                    >
+                                        <IconComp sx={{ fontSize: 32 }} />
+                                    </Box>
+                                    <Typography variant="h4" fontWeight={800}>
+                                        {stat.count}
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                                        {stat.title}
+                                    </Typography>
+                                </Paper>
+                            </Grid>
+                        );
+                    })}
                 </Grid>
             </Container>
 
@@ -332,15 +364,15 @@ const Home = () => {
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.6 }}
                             >
-                                <Typography variant="h2" gutterBottom fontWeight={800}>
+                                <Typography variant="h2" gutterBottom fontWeight={800} sx={{ color: 'white' }}>
                                     Explore the Realm of Beauty
                                 </Typography>
-                                <Typography variant="body1" sx={{ mb: 3, opacity: 0.9, fontSize: '1.1rem', lineHeight: 1.8 }}>
+                                <Typography variant="body1" sx={{ mb: 3, color: 'white', opacity: 0.9, fontSize: '1.1rem', lineHeight: 1.8 }}>
                                     With over 162 branches nationally and internationally, Styler salon is a premium beauty salon
                                     for men and women who desire to look the best every day. Getting a makeover not only changes
                                     the appearance of a person but also brings back the lost confidence.
                                 </Typography>
-                                <Typography variant="body1" sx={{ mb: 4, opacity: 0.9, fontSize: '1.1rem', lineHeight: 1.8 }}>
+                                <Typography variant="body1" sx={{ mb: 4, color: 'white', opacity: 0.9, fontSize: '1.1rem', lineHeight: 1.8 }}>
                                     With over 6000 employees engaged in transforming your look, we make sure that all the services
                                     provided at our salons meet the international standards.
                                 </Typography>

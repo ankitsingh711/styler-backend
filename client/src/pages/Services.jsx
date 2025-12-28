@@ -133,10 +133,10 @@ const Services = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
                     >
-                        <Typography variant="h2" align="center" fontWeight={800} gutterBottom>
+                        <Typography variant="h2" align="center" fontWeight={800} gutterBottom sx={{ color: 'white' }}>
                             Our Premium Services
                         </Typography>
-                        <Typography variant="h6" align="center" sx={{ opacity: 0.9, maxWidth: 600, mx: 'auto' }}>
+                        <Typography variant="h6" align="center" sx={{ color: 'white', opacity: 0.9, maxWidth: 600, mx: 'auto' }}>
                             Choose from our range of professional grooming services
                         </Typography>
                     </MotionBox>

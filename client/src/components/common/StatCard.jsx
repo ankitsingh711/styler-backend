@@ -1,9 +1,8 @@
 import { Paper, Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import CountUp from 'react-countup';
-import { createElement } from 'react';
 
-const StatCard = ({ icon, title, count, color, trend }) => {
+const StatCard = ({ icon: IconComponent, title, count, color, trend }) => {
     return (
         <motion.div
             whileHover={{ y: -4, scale: 1.02 }}
@@ -34,7 +33,7 @@ const StatCard = ({ icon, title, count, color, trend }) => {
                             mb: 2,
                         }}
                     >
-                        {createElement(icon, { sx: { fontSize: 32 } })}
+                        <IconComponent sx={{ fontSize: 32 }} />
                     </Box>
 
                     <Typography variant="h4" fontWeight={800} color="text.primary" sx={{ mb: 0.5 }}>
