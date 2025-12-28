@@ -2,21 +2,51 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import {
+    Box,
+    Container,
+    Paper,
+    TextField,
+    Button,
+    Typography,
+    Tabs,
+    Tab,
+    InputAdornment,
+    IconButton,
+    Alert,
+    Stack,
+    Divider,
+    alpha,
+} from '@mui/material';
+import {
+    Visibility,
+    VisibilityOff,
+    Person,
+    Email,
+    Lock,
+    Phone,
+    Login as LoginIcon,
+    AppRegistration,
+    ArrowBack,
+} from '@mui/icons-material';
+import { motion, AnimatePresence } from 'framer-motion';
 import { authService } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { USER_TYPES } from '../utils/constants';
 import { userLoginSchema, userRegisterSchema } from '../utils/validationSchemas';
-import './Login.css';
+
+const MotionBox = motion(Box);
+const MotionPaper = motion(Paper);
 
 const Login = ({ isRegisterMode = false }) => {
     const [isLogin, setIsLogin] = useState(!isRegisterMode);
+    const [showPassword, setShowPassword] = useState(false);
 
     const navigate = useNavigate();
     const { login: authLogin } = useAuth();
     const { success, error: showError } = useToast();
 
-    // Use different schemas based on login/register mode
     const {
         register,
         handleSubmit,
@@ -27,7 +57,6 @@ const Login = ({ isRegisterMode = false }) => {
         mode: 'onBlur'
     });
 
-    // Switch between login and register, reset form when switching
     const switchMode = (loginMode) => {
         setIsLogin(loginMode);
         reset();
@@ -36,7 +65,6 @@ const Login = ({ isRegisterMode = false }) => {
     const onSubmit = async (data) => {
         try {
             if (isLogin) {
-                // Login
                 const response = await authService.login({
                     email: data.email,
                     password: data.password,
@@ -51,12 +79,8 @@ const Login = ({ isRegisterMode = false }) => {
                 });
 
                 success('Login successful! Welcome back.');
-
-                setTimeout(() => {
-                    navigate('/profile');
-                }, 500);
+                setTimeout(() => navigate('/profile'), 500);
             } else {
-                // Register
                 const response = await authService.register({
                     name: data.name,
                     email: data.email,
@@ -64,7 +88,6 @@ const Login = ({ isRegisterMode = false }) => {
                     phone: data.phone,
                 });
 
-                // Auto-login after registration
                 if (response.token) {
                     authLogin({
                         token: response.token,
@@ -74,12 +97,8 @@ const Login = ({ isRegisterMode = false }) => {
                         name: data.name,
                     });
                     success('Account created successfully! Welcome aboard.');
-
-                    setTimeout(() => {
-                        navigate('/profile');
-                    }, 500);
+                    setTimeout(() => navigate('/profile'), 500);
                 } else {
-                    // If no auto-login, switch to login form
                     switchMode(true);
                     success('Registration successful! Please login.');
                 }
@@ -91,101 +110,186 @@ const Login = ({ isRegisterMode = false }) => {
     };
 
     return (
-        <div className="login-page">
-            <div className="login-container">
-                <div className="login-header">
-                    <h1>{isLogin ? 'Welcome Back' : 'Create Account'}</h1>
-                    <p>{isLogin ? 'Login to book your appointment' : 'Sign up to get started'}</p>
-                </div>
-
-                <div className="login-tabs">
-                    <button
-                        type="button"
-                        className={isLogin ? 'active' : ''}
-                        onClick={() => switchMode(true)}
-                    >
-                        Login
-                    </button>
-                    <button
-                        type="button"
-                        className={!isLogin ? 'active' : ''}
-                        onClick={() => switchMode(false)}
-                    >
-                        Sign Up
-                    </button>
-                </div>
-
-                <form onSubmit={handleSubmit(onSubmit)} className="login-form">
-                    {!isLogin && (
-                        <div className="form-group">
-                            <label htmlFor="name">Full Name</label>
-                            <input
-                                type="text"
-                                id="name"
-                                {...register('name')}
-                                placeholder="Enter your full name"
-                                className={errors.name ? 'error' : ''}
+        <Box
+            sx={{
+                minHeight: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
+                py: 4,
+            }}
+        >
+            <Container maxWidth="sm">
+                <MotionPaper
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    elevation={24}
+                    sx={{
+                        p: 4,
+                        borderRadius: 4,
+                    }}
+                >
+                    {/* Header */}
+                    <Box sx={{ mb: 4, textAlign: 'center' }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+                            <img
+                                src="/images/styler-logo.png"
+                                alt="Styler"
+                                style={{ height: 50, width: 'auto' }}
                             />
-                            {errors.name && (
-                                <span className="error-message">{errors.name.message}</span>
-                            )}
-                        </div>
-                    )}
+                        </Box>
+                        <Typography variant="h4" fontWeight={800} gutterBottom>
+                            {isLogin ? 'Welcome Back' : 'Create Account'}
+                        </Typography>
+                        <Typography variant="body1" color="text.secondary">
+                            {isLogin ? 'Login to book your appointment' : 'Sign up to get started'}
+                        </Typography>
+                    </Box>
 
-                    <div className="form-group">
-                        <label htmlFor="email">Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            {...register('email')}
-                            placeholder="Enter your email"
-                            className={errors.email ? 'error' : ''}
+                    {/* Tabs */}
+                    <Tabs
+                        value={isLogin ? 0 : 1}
+                        onChange={(e, newValue) => switchMode(newValue === 0)}
+                        variant="fullWidth"
+                        sx={{ mb: 4 }}
+                    >
+                        <Tab
+                            label="Login"
+                            icon={<LoginIcon />}
+                            iconPosition="start"
+                            sx={{ fontWeight: 600 }}
                         />
-                        {errors.email && (
-                            <span className="error-message">{errors.email.message}</span>
-                        )}
-                    </div>
-
-                    {!isLogin && (
-                        <div className="form-group">
-                            <label htmlFor="phone">Phone Number</label>
-                            <input
-                                type="tel"
-                                id="phone"
-                                {...register('phone')}
-                                placeholder="Enter your phone number"
-                                className={errors.phone ? 'error' : ''}
-                            />
-                            {errors.phone && (
-                                <span className="error-message">{errors.phone.message}</span>
-                            )}
-                        </div>
-                    )}
-
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            {...register('password')}
-                            placeholder="Enter your password"
-                            className={errors.password ? 'error' : ''}
+                        <Tab
+                            label="Sign Up"
+                            icon={<AppRegistration />}
+                            iconPosition="start"
+                            sx={{ fontWeight: 600 }}
                         />
-                        {errors.password && (
-                            <span className="error-message">{errors.password.message}</span>
-                        )}
-                    </div>
+                    </Tabs>
 
-                    <button type="submit" className="submit-btn" disabled={isSubmitting}>
-                        {isSubmitting ? 'Processing...' : (isLogin ? 'Login' : 'Sign Up')}
-                    </button>
-                </form>
+                    {/* Form */}
+                    <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+                        <AnimatePresence mode="wait">
+                            <MotionBox
+                                key={isLogin ? 'login' : 'register'}
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <Stack spacing={3}>
+                                    {!isLogin && (
+                                        <TextField
+                                            fullWidth
+                                            label="Full Name"
+                                            {...register('name')}
+                                            error={!!errors.name}
+                                            helperText={errors.name?.message}
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <Person />
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                    )}
 
-                <div className="login-footer">
-                    <Link to="/">Back to Home</Link>
-                </div>
-            </div>
-        </div>
+                                    <TextField
+                                        fullWidth
+                                        label="Email Address"
+                                        type="email"
+                                        {...register('email')}
+                                        error={!!errors.email}
+                                        helperText={errors.email?.message}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <Email />
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+
+                                    {!isLogin && (
+                                        <TextField
+                                            fullWidth
+                                            label="Phone Number"
+                                            {...register('phone')}
+                                            error={!!errors.phone}
+                                            helperText={errors.phone?.message}
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <Phone />
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                    )}
+
+                                    <TextField
+                                        fullWidth
+                                        label="Password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        {...register('password')}
+                                        error={!!errors.password}
+                                        helperText={errors.password?.message}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <Lock />
+                                                </InputAdornment>
+                                            ),
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        onClick={() => setShowPassword(!showPassword)}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+
+                                    <Button
+                                        type="submit"
+                                        fullWidth
+                                        variant="contained"
+                                        size="large"
+                                        disabled={isSubmitting}
+                                        sx={{
+                                            py: 1.5,
+                                            fontWeight: 700,
+                                            fontSize: '1.1rem',
+                                        }}
+                                    >
+                                        {isSubmitting ? 'Processing...' : (isLogin ? 'Login' : 'Sign Up')}
+                                    </Button>
+                                </Stack>
+                            </MotionBox>
+                        </AnimatePresence>
+                    </Box>
+
+                    <Divider sx={{ my: 3 }} />
+
+                    {/* Footer */}
+                    <Box sx={{ textAlign: 'center' }}>
+                        <Button
+                            component={Link}
+                            to="/"
+                            startIcon={<ArrowBack />}
+                            sx={{ fontWeight: 600 }}
+                        >
+                            Back to Home
+                        </Button>
+                    </Box>
+                </MotionPaper>
+            </Container>
+        </Box>
     );
 };
 

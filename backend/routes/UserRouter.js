@@ -293,9 +293,61 @@ UserRouter.get("/appointments", async (req, res) => {
 
         const appointments = await AppointmentModel.find({ UserID: userId });
 
+        // Get StylesModel for service details
+        const { StylesModel } = require("../models/Styles");
+
+        // Populate styler and service details for each appointment
+        const populatedAppointments = await Promise.all(
+            appointments.map(async (appointment) => {
+                // Get styler details
+                let stylerDetails = null;
+                if (appointment.StylistID) {
+                    try {
+                        const styler = await StylerModel.findById(appointment.StylistID);
+                        if (styler) {
+                            stylerDetails = {
+                                _id: styler._id,
+                                name: styler.Styler_name || styler.name || 'Unknown Styler'
+                            };
+                        }
+                    } catch (err) {
+                        console.error("Error fetching styler:", err);
+                    }
+                }
+
+                // Get service details
+                let serviceDetails = null;
+                if (appointment.serviceId) {
+                    try {
+                        const service = await StylesModel.findById(appointment.serviceId);
+                        if (service) {
+                            serviceDetails = {
+                                _id: service._id,
+                                name: service.name
+                            };
+                        }
+                    } catch (err) {
+                        console.error("Error fetching service:", err);
+                    }
+                }
+
+                // Return formatted appointment
+                return {
+                    _id: appointment._id,
+                    styler: stylerDetails,
+                    stylerName: appointment.Stylistname || stylerDetails?.name || 'N/A',
+                    service: serviceDetails,
+                    serviceName: serviceDetails?.name || 'N/A',
+                    date: appointment.date,
+                    time: appointment.slot, // Map 'slot' to 'time' for frontend compatibility
+                    status: appointment.status || 'Pending'
+                };
+            })
+        );
+
         res.status(200).json({
             success: true,
-            data: appointments
+            data: populatedAppointments
         });
     } catch (error) {
         console.error("Error fetching appointments:", error.message);
