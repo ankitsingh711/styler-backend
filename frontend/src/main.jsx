@@ -10,12 +10,8 @@ import '@mantine/core/styles.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <AuthProvider>
-      <RBACProvider>
-        <MantineProvider theme={theme}>
-          <App />
-        </MantineProvider>
-      </RBACProvider>
-    </AuthProvider>
+    <MantineProvider theme={theme}>
+      <App />
+    </MantineProvider>
   </StrictMode>,
 )

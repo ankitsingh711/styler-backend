@@ -54,7 +54,22 @@ const Home = () => {
         const loadStats = async () => {
             try {
                 const data = await fetchStats();
-                setStats(data);
+                // Ensure stats is an array - API might return { stats: [...] } or just [...]
+                const statsArray = Array.isArray(data) ? data : (data?.stats || []);
+
+                // If no stats returned, use default fallback
+                if (statsArray.length === 0) {
+                    setStats([
+                        { iconName: 'location', title: 'Branches', count: '20+', color: colorMap.location },
+                        { iconName: 'star', title: 'Happy Clients', count: '5000+', color: colorMap.star },
+                        { iconName: 'scissors', title: 'Expert Stylists', count: '150+', color: colorMap.scissors },
+                        { iconName: 'calendar', title: 'Total Appointments', count: '10K+', color: colorMap.calendar },
+                        { iconName: 'heart', title: 'Customer Satisfaction', count: '98%', color: colorMap.heart },
+                        { iconName: 'trophy', title: 'Years in Business', count: '15+', color: colorMap.trophy },
+                    ]);
+                } else {
+                    setStats(statsArray);
+                }
                 setStatsLoading(false);
             } catch (error) {
                 console.error('Error loading stats:', error);

@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
+import { RBACProvider } from './context/RBACContext';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import Loader from './components/common/Loader';
@@ -122,9 +123,11 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <ToastProvider>
-        <AppContent />
-      </ToastProvider>
+      <RBACProvider>
+        <ToastProvider>
+          <AppContent />
+        </ToastProvider>
+      </RBACProvider>
     </AuthProvider>
   );
 }
