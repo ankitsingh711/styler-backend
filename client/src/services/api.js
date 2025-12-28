@@ -49,21 +49,31 @@ api.interceptors.response.use(
         if (error.response) {
             // Handle token expiration
             if (error.response.status === 401 && !originalRequest._retry) {
-                if (error.response.data?.code === 'TOKEN_EXPIRED' || 
+                // Check if this is a login/register endpoint - don't redirect for these
+                const isAuthEndpoint = originalRequest.url?.includes('/login') ||
+                    originalRequest.url?.includes('/register');
+
+                if (isAuthEndpoint) {
+                    // For login/register endpoints, just reject the error
+                    // Let the component handle it
+                    return Promise.reject(error);
+                }
+
+                if (error.response.data?.code === 'TOKEN_EXPIRED' ||
                     error.response.data?.message?.includes('expired')) {
-                    
+
                     if (isRefreshing) {
                         // Wait for the refresh to complete
                         return new Promise((resolve, reject) => {
                             failedQueue.push({ resolve, reject });
                         })
-                        .then(token => {
-                            originalRequest.headers.Authorization = `Bearer ${token}`;
-                            return api(originalRequest);
-                        })
-                        .catch(err => {
-                            return Promise.reject(err);
-                        });
+                            .then(token => {
+                                originalRequest.headers.Authorization = `Bearer ${token}`;
+                                return api(originalRequest);
+                            })
+                            .catch(err => {
+                                return Promise.reject(err);
+                            });
                     }
 
                     originalRequest._retry = true;
@@ -109,7 +119,7 @@ api.interceptors.response.use(
                     }
                 }
 
-                // Other 401 errors - clear auth and redirect
+                // Other 401 errors on protected routes - clear auth and redirect
                 clearAuthData();
                 window.location.href = '/login';
             }

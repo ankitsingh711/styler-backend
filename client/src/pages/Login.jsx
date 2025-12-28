@@ -48,7 +48,7 @@ const Login = ({ isRegisterMode = false }) => {
                 });
 
                 success('Login successful! Welcome back.');
-                
+
                 setTimeout(() => {
                     navigate('/profile');
                 }, 500);
@@ -71,7 +71,7 @@ const Login = ({ isRegisterMode = false }) => {
                         name: formData.name,
                     });
                     success('Account created successfully! Welcome aboard.');
-                    
+
                     setTimeout(() => {
                         navigate('/profile');
                     }, 500);

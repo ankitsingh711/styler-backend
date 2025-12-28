@@ -1,16 +1,16 @@
 const express = require("express");
 require("dotenv").config();
-const { UserModel } = require("../Model/UserModel");
-const { StylerModel } = require("../Model/StylerModel");
+const { UserModel } = require("../models/UserModel");
+const { StylerModel } = require("../models/StylerModel");
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 const path = require("path");
-const { AppointmentModel } = require("../Model/AppointmentModel");
-const { BlockUserModel } = require("../Model/BlockUserModel");
-const { StylesModel } = require("../Model/Styles")
+const { AppointmentModel } = require("../models/AppointmentModel");
+const { BlockUserModel } = require("../models/BlockUserModel");
+const { StylesModel } = require("../models/Styles")
 const statusemail = require("../config/statusemail");
-const { authorization } = require("../Middleware/Authorization");
-const { authenticate } = require("../Middleware/Authentication");
+const { authorization } = require("../middleware/Authorization");
+const { authenticate } = require("../middleware/Authentication");
 const { generateTokenPair, verifyRefreshToken } = require("../utils/jwtHelper");
 const AdminRouter = express.Router();
 

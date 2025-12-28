@@ -1,15 +1,15 @@
 const express = require("express");
 require("dotenv").config();
-const { UserModel } = require("../Model/UserModel");
+const { UserModel } = require("../models/UserModel");
 const client = require("../config/redis");
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 const path = require("path");
 const UserRouter = express.Router();
-const { authenticate } = require("../Middleware/Authentication");
-const { StylerModel } = require("../Model/StylerModel");
-const { AppointmentModel } = require("../Model/AppointmentModel");
-const { BlockUserModel } = require("../Model/BlockUserModel");
+const { authenticate } = require("../middleware/Authentication");
+const { StylerModel } = require("../models/StylerModel");
+const { AppointmentModel } = require("../models/AppointmentModel");
+const { BlockUserModel } = require("../models/BlockUserModel");
 const otpvalidator = require("../config/OTP");
 const { generateTokenPair, verifyRefreshToken } = require("../utils/jwtHelper");
 
@@ -248,7 +248,7 @@ UserRouter.post("/appointments", async (req, res) => {
         }
 
         // Get service details
-        const { StylesModel } = require("../Model/Styles");
+        const { StylesModel } = require("../models/Styles");
         const service = await StylesModel.findById(serviceId);
         if (!service) {
             return res.status(404).json({
