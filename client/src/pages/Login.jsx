@@ -1,50 +1,53 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { authService } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { USER_TYPES } from '../utils/constants';
+import { userLoginSchema, userRegisterSchema } from '../utils/validationSchemas';
 import './Login.css';
 
 const Login = ({ isRegisterMode = false }) => {
     const [isLogin, setIsLogin] = useState(!isRegisterMode);
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        password: '',
-        phone: '',
-    });
-    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
     const { login: authLogin } = useAuth();
     const { success, error: showError } = useToast();
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
+    // Use different schemas based on login/register mode
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+        reset
+    } = useForm({
+        resolver: yupResolver(isLogin ? userLoginSchema : userRegisterSchema),
+        mode: 'onBlur'
+    });
+
+    // Switch between login and register, reset form when switching
+    const switchMode = (loginMode) => {
+        setIsLogin(loginMode);
+        reset();
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-
+    const onSubmit = async (data) => {
         try {
             if (isLogin) {
                 // Login
                 const response = await authService.login({
-                    email: formData.email,
-                    password: formData.password,
+                    email: data.email,
+                    password: data.password,
                 });
 
                 authLogin({
                     token: response.token,
                     refreshToken: response.refreshToken,
-                    email: formData.email,
+                    email: data.email,
                     userType: USER_TYPES.USER,
-                    name: response.username || formData.email,
+                    name: response.username || data.email,
                 });
 
                 success('Login successful! Welcome back.');
@@ -55,10 +58,10 @@ const Login = ({ isRegisterMode = false }) => {
             } else {
                 // Register
                 const response = await authService.register({
-                    name: formData.name,
-                    email: formData.email,
-                    password: formData.password,
-                    phone: formData.phone,
+                    name: data.name,
+                    email: data.email,
+                    password: data.password,
+                    phone: data.phone,
                 });
 
                 // Auto-login after registration
@@ -66,9 +69,9 @@ const Login = ({ isRegisterMode = false }) => {
                     authLogin({
                         token: response.token,
                         refreshToken: response.refreshToken,
-                        email: formData.email,
+                        email: data.email,
                         userType: USER_TYPES.USER,
-                        name: formData.name,
+                        name: data.name,
                     });
                     success('Account created successfully! Welcome aboard.');
 
@@ -77,15 +80,13 @@ const Login = ({ isRegisterMode = false }) => {
                     }, 500);
                 } else {
                     // If no auto-login, switch to login form
-                    setIsLogin(true);
+                    switchMode(true);
                     success('Registration successful! Please login.');
                 }
             }
         } catch (err) {
             const errorMessage = err.response?.data?.message || 'An error occurred. Please try again.';
             showError(errorMessage);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -99,32 +100,35 @@ const Login = ({ isRegisterMode = false }) => {
 
                 <div className="login-tabs">
                     <button
+                        type="button"
                         className={isLogin ? 'active' : ''}
-                        onClick={() => setIsLogin(true)}
+                        onClick={() => switchMode(true)}
                     >
                         Login
                     </button>
                     <button
+                        type="button"
                         className={!isLogin ? 'active' : ''}
-                        onClick={() => setIsLogin(false)}
+                        onClick={() => switchMode(false)}
                     >
                         Sign Up
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="login-form">
+                <form onSubmit={handleSubmit(onSubmit)} className="login-form">
                     {!isLogin && (
                         <div className="form-group">
                             <label htmlFor="name">Full Name</label>
                             <input
                                 type="text"
                                 id="name"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                required={!isLogin}
+                                {...register('name')}
                                 placeholder="Enter your full name"
+                                className={errors.name ? 'error' : ''}
                             />
+                            {errors.name && (
+                                <span className="error-message">{errors.name.message}</span>
+                            )}
                         </div>
                     )}
 
@@ -133,12 +137,13 @@ const Login = ({ isRegisterMode = false }) => {
                         <input
                             type="email"
                             id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
+                            {...register('email')}
                             placeholder="Enter your email"
+                            className={errors.email ? 'error' : ''}
                         />
+                        {errors.email && (
+                            <span className="error-message">{errors.email.message}</span>
+                        )}
                     </div>
 
                     {!isLogin && (
@@ -147,12 +152,13 @@ const Login = ({ isRegisterMode = false }) => {
                             <input
                                 type="tel"
                                 id="phone"
-                                name="phone"
-                                value={formData.phone}
-                                onChange={handleChange}
-                                required={!isLogin}
+                                {...register('phone')}
                                 placeholder="Enter your phone number"
+                                className={errors.phone ? 'error' : ''}
                             />
+                            {errors.phone && (
+                                <span className="error-message">{errors.phone.message}</span>
+                            )}
                         </div>
                     )}
 
@@ -161,16 +167,17 @@ const Login = ({ isRegisterMode = false }) => {
                         <input
                             type="password"
                             id="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
+                            {...register('password')}
                             placeholder="Enter your password"
+                            className={errors.password ? 'error' : ''}
                         />
+                        {errors.password && (
+                            <span className="error-message">{errors.password.message}</span>
+                        )}
                     </div>
 
-                    <button type="submit" className="submit-btn" disabled={loading}>
-                        {loading ? 'Processing...' : (isLogin ? 'Login' : 'Sign Up')}
+                    <button type="submit" className="submit-btn" disabled={isSubmitting}>
+                        {isSubmitting ? 'Processing...' : (isLogin ? 'Login' : 'Sign Up')}
                     </button>
                 </form>
 

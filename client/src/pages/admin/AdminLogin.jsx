@@ -1,57 +1,50 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { authService } from '../../services/authService';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { USER_TYPES } from '../../utils/constants';
+import { adminLoginSchema } from '../../utils/validationSchemas';
 import './AdminLogin.css';
 
 const AdminLogin = () => {
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-    });
-    const [loading, setLoading] = useState(false);
-
     const navigate = useNavigate();
     const { login } = useAuth();
     const { success, error: showError } = useToast();
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
-    };
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting }
+    } = useForm({
+        resolver: yupResolver(adminLoginSchema),
+        mode: 'onBlur'
+    });
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-
+    const onSubmit = async (data) => {
         try {
             const response = await authService.adminLogin({
-                email: formData.email,
-                password: formData.password,
+                email: data.email,
+                password: data.password,
             });
 
             login({
                 token: response.token,
                 refreshToken: response.refreshToken,
-                email: formData.email,
+                email: data.email,
                 userType: USER_TYPES.ADMIN,
                 name: response.username || 'Admin',
             });
 
             success('Admin login successful! Welcome back.');
-            
+
             setTimeout(() => {
                 navigate('/admin/dashboard');
             }, 500);
         } catch (err) {
             const errorMessage = err.response?.data?.message || 'Invalid admin credentials';
             showError(errorMessage);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -63,18 +56,19 @@ const AdminLogin = () => {
                     <p>Access the admin dashboard</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="admin-login-form">
+                <form onSubmit={handleSubmit(onSubmit)} className="admin-login-form">
                     <div className="form-group">
                         <label htmlFor="email">Admin Email</label>
                         <input
                             type="email"
                             id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
+                            {...register('email')}
                             placeholder="Enter admin email"
+                            className={errors.email ? 'error' : ''}
                         />
+                        {errors.email && (
+                            <span className="error-message">{errors.email.message}</span>
+                        )}
                     </div>
 
                     <div className="form-group">
@@ -82,16 +76,17 @@ const AdminLogin = () => {
                         <input
                             type="password"
                             id="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
+                            {...register('password')}
                             placeholder="Enter password"
+                            className={errors.password ? 'error' : ''}
                         />
+                        {errors.password && (
+                            <span className="error-message">{errors.password.message}</span>
+                        )}
                     </div>
 
-                    <button type="submit" className="submit-btn" disabled={loading}>
-                        {loading ? 'Logging in...' : 'Login'}
+                    <button type="submit" className="submit-btn" disabled={isSubmitting}>
+                        {isSubmitting ? 'Logging in...' : 'Login'}
                     </button>
                 </form>
             </div>
