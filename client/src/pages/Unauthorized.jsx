@@ -1,95 +1,92 @@
 import React from 'react';
-import { Box, Container, Typography, Button, Paper } from '@mui/material';
-import { motion } from 'framer-motion';
-import { Block, ArrowBack } from '@mui/icons-material';
+import { Box, Container, Title, Text, Button, Paper, Center, rem } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
+import { IconShieldX, IconArrowLeft } from '@tabler/icons-react';
+import { motion } from
 
-const MotionPaper = motion(Paper);
+    'framer-motion';
 
 const Unauthorized = () => {
     const navigate = useNavigate();
 
+    const handleGoBack = () => {
+        navigate(-1);
+    };
+
     return (
-        <Box
-            sx={{
-                minHeight: '100vh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            }}
-        >
-            <Container maxWidth="sm">
-                <MotionPaper
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+        <Center style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #fef3c7 0%, #fdba74 100%)' }}>
+            <Container size="sm">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5 }}
-                    elevation={8}
-                    sx={{
-                        p: 5,
-                        textAlign: 'center',
-                        borderRadius: 3,
-                    }}
                 >
-                    <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+                    <Paper
+                        shadow="xl"
+                        p="xl"
+                        radius="lg"
+                        style={{
+                            textAlign: 'center',
+                        }}
                     >
-                        <Block
-                            sx={{
-                                fontSize: 80,
-                                color: 'error.main',
-                                mb: 2,
+                        <motion.div
+                            animate={{
+                                scale: [1, 1.1, 1],
+                                rotate: [0, 10, -10, 0],
                             }}
-                        />
-                    </motion.div>
+                            transition={{
+                                duration: 2,
+                                repeat: Infinity,
+                                repeatDelay: 1,
+                            }}
+                        >
+                            <Box
+                                style={{
+                                    width: rem(120),
+                                    height: rem(120),
+                                    borderRadius: '50%',
+                                    background: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    margin: '0 auto',
+                                    marginBottom: rem(24),
+                                    boxShadow: '0 8px 32px rgba(220, 38, 38, 0.3)',
+                                }}
+                            >
+                                <IconShieldX size={64} color="white" stroke={2} />
+                            </Box>
+                        </motion.div>
 
-                    <Typography
-                        variant="h3"
-                        fontWeight={800}
-                        gutterBottom
-                        sx={{
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                        }}
-                    >
-                        403
-                    </Typography>
+                        <Title order={1} fw={900} mb="md" style={{ fontSize: rem(48) }}>
+                            403
+                        </Title>
 
-                    <Typography variant="h5" fontWeight={700} gutterBottom>
-                        Access Denied
-                    </Typography>
+                        <Title order={2} fw={700} mb="sm">
+                            Access Denied
+                        </Title>
 
-                    <Typography
-                        variant="body1"
-                        color="text.secondary"
-                        sx={{ mb: 4 }}
-                    >
-                        You don't have permission to access this resource. Please contact your administrator if you believe this is an error.
-                    </Typography>
+                        <Text size="lg" c="dimmed" mb="xl">
+                            You don't have permission to access this page. Please contact your administrator if you believe this is an error.
+                        </Text>
 
-                    <Button
-                        variant="contained"
-                        size="large"
-                        startIcon={<ArrowBack />}
-                        onClick={() => navigate(-1)}
-                        sx={{
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            px: 4,
-                            py: 1.5,
-                            fontWeight: 700,
-                            '&:hover': {
-                                background: 'linear-gradient(135deg, #5568d3 0%, #6b4298 100%)',
-                            },
-                        }}
-                    >
-                        Go Back
-                    </Button>
-                </MotionPaper>
+                        <Button
+                            size="lg"
+                            color="amber"
+                            leftSection={<IconArrowLeft size={20} />}
+                            onClick={handleGoBack}
+                            styles={{
+                                root: {
+                                    fontWeight: 700,
+                                },
+                            }}
+                        >
+                            Go Back
+                        </Button>
+                    </Paper>
+                </motion.div>
             </Container>
-        </Box>
+        </Center>
     );
 };
 

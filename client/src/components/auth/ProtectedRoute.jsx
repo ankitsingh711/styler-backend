@@ -2,18 +2,10 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useRBAC } from '../../context/RBACContext';
-import { CircularProgress, Box } from '@mui/material';
+import { Center, Loader } from '@mantine/core';
 
 /**
  * ProtectedRoute component - Protects routes based on permissions or roles
- * Usage:
- *   <ProtectedRoute permission="salon:edit">
- *     <SalonEditPage />
- *   </ProtectedRoute>
- * 
- *   <ProtectedRoute role={["superadmin", "salon_owner"]}>
- *     <AdminDashboard />
- *   </ProtectedRoute>
  */
 const ProtectedRoute = ({
     children,
@@ -36,16 +28,9 @@ const ProtectedRoute = ({
     // Show loading state while checking auth and permissions
     if (authLoading || rbacLoading) {
         return (
-            <Box
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    minHeight: '100vh'
-                }}
-            >
-                <CircularProgress />
-            </Box>
+            <Center style={{ minHeight: '100vh' }}>
+                <Loader size="lg" />
+            </Center>
         );
     }
 

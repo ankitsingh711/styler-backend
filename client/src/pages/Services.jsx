@@ -3,30 +3,29 @@ import { useNavigate } from 'react-router-dom';
 import {
     Box,
     Container,
-    Typography,
+    Title,
+    Text,
     Grid,
     Paper,
-    TextField,
+    Select,
     Button,
-    MenuItem,
     Alert,
     Skeleton,
-    alpha,
     Stepper,
-    Step,
-    StepLabel,
-} from '@mui/material';
+    rem,
+} from '@mantine/core';
 import {
-    ContentCut,
-    Person,
-    CalendarMonth,
-    AccessTime,
-    CheckCircle,
-} from '@mui/icons-material';
+    IconScissors,
+    IconUser,
+    IconCalendar,
+    IconClock,
+    IconCircleCheck,
+} from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ServiceCard from '../components/common/ServiceCard';
 import { bookingService } from '../services/bookingService';
 import { useAuth } from '../context/AuthContext';
+import { DateInput, TimeInput } from '@mantine/dates';
 
 const MotionBox = motion(Box);
 
@@ -35,7 +34,7 @@ const Services = () => {
     const [services, setServices] = useState([]);
     const [selectedStyler, setSelectedStyler] = useState('');
     const [selectedService, setSelectedService] = useState('');
-    const [selectedDate, setSelectedDate] = useState('');
+    const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState('');
     const [loading, setLoading] = useState(false);
     const [dataLoading, setDataLoading] = useState(true);
@@ -90,7 +89,7 @@ const Services = () => {
             await bookingService.createAppointment({
                 stylerId: selectedStyler,
                 serviceId: selectedService,
-                date: selectedDate,
+                date: selectedDate?.toISOString().split('T')[0],
                 time: selectedTime,
             });
 
@@ -117,14 +116,15 @@ const Services = () => {
     };
 
     return (
-        <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 4 }}>
+        <Box style={{ backgroundColor: '#f8f9fa', minHeight: '100vh', paddingTop: rem(32), paddingBottom: rem(32) }}>
             {/* Hero Section */}
             <Box
-                sx={{
+                style={{
                     background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
                     color: 'white',
-                    py: { xs: 6, md: 8 },
-                    mb: 6,
+                    paddingTop: rem(48),
+                    paddingBottom: rem(48),
+                    marginBottom: rem(48),
                 }}
             >
                 <Container>
@@ -133,85 +133,83 @@ const Services = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
                     >
-                        <Typography variant="h2" align="center" fontWeight={800} gutterBottom sx={{ color: 'white' }}>
+                        <Title order={1} ta="center" fw={800} c="white" mb="xs">
                             Our Premium Services
-                        </Typography>
-                        <Typography variant="h6" align="center" sx={{ color: 'white', opacity: 0.9, maxWidth: 600, mx: 'auto' }}>
+                        </Title>
+                        <Text size="xl" ta="center" c="white" opacity={0.9} maw={600} mx="auto">
                             Choose from our range of professional grooming services
-                        </Typography>
+                        </Text>
                     </MotionBox>
                 </Container>
             </Box>
 
             <Container>
-                <Grid container spacing={4}>
+                <Grid gutter="xl">
                     {/* Services Grid */}
-                    <Grid item xs={12} md={7}>
+                    <Grid.Col span={{ base: 12, md: 7 }}>
                         <MotionBox
                             initial={{ opacity: 0, x: -30 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.6 }}
                         >
-                            <Typography variant="h4" fontWeight={700} gutterBottom sx={{ mb: 3 }}>
+                            <Title order={3} fw={700} mb="lg">
                                 Available Services
-                            </Typography>
+                            </Title>
 
                             {dataLoading ? (
-                                <Grid container spacing={3}>
+                                <Grid>
                                     {[1, 2, 3, 4].map((item) => (
-                                        <Grid item xs={12} sm={6} key={item}>
-                                            <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 4 }} />
-                                        </Grid>
+                                        <Grid.Col key={item} span={{ base: 12, sm: 6 }}>
+                                            <Skeleton height={300} radius="md" />
+                                        </Grid.Col>
                                     ))}
                                 </Grid>
                             ) : services.length > 0 ? (
-                                <Grid container spacing={3}>
+                                <Grid>
                                     {services.map((service) => (
-                                        <Grid item xs={12} sm={6} key={service._id}>
+                                        <Grid.Col key={service._id} span={{ base: 12, sm: 6 }}>
                                             <ServiceCard
                                                 service={service}
                                                 onBook={() => setSelectedService(service._id)}
                                             />
-                                        </Grid>
+                                        </Grid.Col>
                                     ))}
                                 </Grid>
                             ) : (
-                                <Paper sx={{ p: 4, textAlign: 'center' }}>
-                                    <ContentCut sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-                                    <Typography color="text.secondary">
+                                <Paper p="xl" radius="md" style={{ textAlign: 'center' }}>
+                                    <IconScissors size={64} opacity={0.5} style={{ margin: '0 auto', marginBottom: rem(16) }} />
+                                    <Text c="dimmed">
                                         No services available at the moment.
-                                    </Typography>
+                                    </Text>
                                 </Paper>
                             )}
                         </MotionBox>
-                    </Grid>
+                    </Grid.Col>
 
                     {/* Booking Form */}
-                    <Grid item xs={12} md={5}>
+                    <Grid.Col span={{ base: 12, md: 5 }}>
                         <MotionBox
                             initial={{ opacity: 0, x: 30 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.6, delay: 0.2 }}
                         >
                             <Paper
-                                elevation={3}
-                                sx={{
-                                    p: 4,
-                                    position: { md: 'sticky' },
+                                shadow="md"
+                                p="xl"
+                                radius="lg"
+                                style={{
+                                    position: 'sticky',
                                     top: 100,
-                                    borderRadius: 4,
                                 }}
                             >
-                                <Typography variant="h4" fontWeight={700} gutterBottom>
+                                <Title order={3} fw={700} mb="md">
                                     Book Appointment
-                                </Typography>
+                                </Title>
 
                                 {/* Stepper */}
-                                <Stepper activeStep={getActiveStep()} sx={{ mb: 4, mt: 3 }}>
+                                <Stepper active={getActiveStep()} mb="xl" mt="md">
                                     {steps.map((label) => (
-                                        <Step key={label}>
-                                            <StepLabel>{label}</StepLabel>
-                                        </Step>
+                                        <Stepper.Step key={label} label={label} />
                                     ))}
                                 </Stepper>
 
@@ -223,9 +221,9 @@ const Services = () => {
                                             exit={{ opacity: 0, y: -10 }}
                                         >
                                             <Alert
-                                                severity={message.type}
-                                                sx={{ mb: 3 }}
-                                                icon={message.type === 'success' ? <CheckCircle /> : undefined}
+                                                color={message.type === 'success' ? 'green' : 'red'}
+                                                mb="md"
+                                                icon={message.type === 'success' ? <IconCircleCheck size={16} /> : undefined}
                                             >
                                                 {message.text}
                                             </Alert>
@@ -234,108 +232,84 @@ const Services = () => {
                                 </AnimatePresence>
 
                                 <Box component="form" onSubmit={handleBooking}>
-                                    <TextField
-                                        select
-                                        fullWidth
+                                    <Select
                                         label="Select Service"
+                                        placeholder="Choose a service"
+                                        data={services.map(s => ({
+                                            value: s._id,
+                                            label: `${s.name || s.serviceName} - ₹${s.price || s.amount}`
+                                        }))}
                                         value={selectedService}
-                                        onChange={(e) => setSelectedService(e.target.value)}
+                                        onChange={setSelectedService}
+                                        leftSection={<IconScissors size={16} />}
+                                        mb="md"
                                         required
-                                        sx={{ mb: 3 }}
-                                        InputProps={{
-                                            startAdornment: <ContentCut sx={{ mr: 1, color: 'text.secondary' }} />,
-                                        }}
-                                    >
-                                        <MenuItem value="">Choose a service</MenuItem>
-                                        {services.map((service) => (
-                                            <MenuItem key={service._id} value={service._id}>
-                                                {service.name || service.serviceName} - ₹{service.price || service.amount}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
-
-                                    <TextField
-                                        select
-                                        fullWidth
-                                        label="Select Styler"
-                                        value={selectedStyler}
-                                        onChange={(e) => setSelectedStyler(e.target.value)}
-                                        required
-                                        disabled={!selectedService}
-                                        sx={{ mb: 3 }}
-                                        InputProps={{
-                                            startAdornment: <Person sx={{ mr: 1, color: 'text.secondary' }} />,
-                                        }}
-                                    >
-                                        <MenuItem value="">Choose a styler</MenuItem>
-                                        {stylers.map((styler) => (
-                                            <MenuItem key={styler._id} value={styler._id}>
-                                                {styler.name} - {styler.specialization || 'Expert Styler'}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
-
-                                    <TextField
-                                        type="date"
-                                        fullWidth
-                                        label="Select Date"
-                                        value={selectedDate}
-                                        onChange={(e) => setSelectedDate(e.target.value)}
-                                        InputLabelProps={{ shrink: true }}
-                                        inputProps={{ min: new Date().toISOString().split('T')[0] }}
-                                        required
-                                        disabled={!selectedStyler}
-                                        sx={{ mb: 3 }}
-                                        InputProps={{
-                                            startAdornment: <CalendarMonth sx={{ mr: 1, color: 'text.secondary' }} />,
-                                        }}
                                     />
 
-                                    <TextField
-                                        select
-                                        fullWidth
-                                        label="Select Time"
-                                        value={selectedTime}
-                                        onChange={(e) => setSelectedTime(e.target.value)}
+                                    <Select
+                                        label="Select Styler"
+                                        placeholder="Choose a styler"
+                                        data={stylers.map(s => ({
+                                            value: s._id,
+                                            label: `${s.name} - ${s.specialization || 'Expert Styler'}`
+                                        }))}
+                                        value={selectedStyler}
+                                        onChange={setSelectedStyler}
+                                        leftSection={<IconUser size={16} />}
+                                        disabled={!selectedService}
+                                        mb="md"
                                         required
+                                    />
+
+                                    <DateInput
+                                        label="Select Date"
+                                        placeholder="Pick a date"
+                                        value={selectedDate}
+                                        onChange={setSelectedDate}
+                                        leftSection={<IconCalendar size={16} />}
+                                        minDate={new Date()}
+                                        disabled={!selectedStyler}
+                                        mb="md"
+                                        required
+                                    />
+
+                                    <Select
+                                        label="Select Time"
+                                        placeholder="Choose a time slot"
+                                        data={timeSlots}
+                                        value={selectedTime}
+                                        onChange={setSelectedTime}
+                                        leftSection={<IconClock size={16} />}
                                         disabled={!selectedDate}
-                                        sx={{ mb: 3 }}
-                                        InputProps={{
-                                            startAdornment: <AccessTime sx={{ mr: 1, color: 'text.secondary' }} />,
-                                        }}
-                                    >
-                                        <MenuItem value="">Choose a time slot</MenuItem>
-                                        {timeSlots.map((time) => (
-                                            <MenuItem key={time} value={time}>
-                                                {time}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
+                                        mb="md"
+                                        required
+                                    />
 
                                     <Button
                                         type="submit"
                                         fullWidth
-                                        variant="contained"
-                                        size="large"
-                                        disabled={loading || !selectedService || !selectedStyler || !selectedDate || !selectedTime}
-                                        sx={{
-                                            py: 1.5,
-                                            fontWeight: 700,
-                                            fontSize: '1.1rem',
+                                        size="lg"
+                                        color="amber"
+                                        loading={loading}
+                                        disabled={!selectedService || !selectedStyler || !selectedDate || !selectedTime}
+                                        styles={{
+                                            root: {
+                                                fontWeight: 700,
+                                            },
                                         }}
                                     >
-                                        {loading ? 'Booking...' : 'Confirm Booking'}
+                                        Confirm Booking
                                     </Button>
 
                                     {!isAuthenticated() && (
-                                        <Alert severity="info" sx={{ mt: 2 }}>
+                                        <Alert color="blue" mt="md">
                                             Please login to book an appointment
                                         </Alert>
                                     )}
                                 </Box>
                             </Paper>
                         </MotionBox>
-                    </Grid>
+                    </Grid.Col>
                 </Grid>
             </Container>
         </Box>

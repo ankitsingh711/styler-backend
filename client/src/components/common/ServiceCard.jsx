@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Card, CardContent, CardMedia, CardActions, Typography, Button, Box, Chip } from '@mui/material';
+import { Card, Image, Text, Button, Box, Badge, Group } from '@mantine/core';
 import { motion } from 'framer-motion';
-import { ContentCut } from '@mui/icons-material';
+import { IconScissors } from '@tabler/icons-react';
 
 const ServiceCard = ({ service, onBook }) => {
     const { name, serviceName, price, amount, description, image } = service;
@@ -17,94 +17,81 @@ const ServiceCard = ({ service, onBook }) => {
             style={{ height: '100%' }}
         >
             <Card
-                sx={{
+                shadow="sm"
+                padding="lg"
+                radius="md"
+                withBorder
+                style={{
                     height: '100%',
                     minHeight: 420,
                     display: 'flex',
                     flexDirection: 'column',
                     position: 'relative',
-                    overflow: 'hidden',
-                    '&:hover': {
-                        '& .service-image': {
-                            transform: 'scale(1.1)',
-                        },
-                    },
                 }}
             >
                 {image && !imageError ? (
-                    <CardMedia
-                        component="img"
-                        height="200"
-                        image={image}
-                        alt={displayName}
-                        className="service-image"
-                        onError={() => setImageError(true)}
-                        sx={{
-                            transition: 'transform 0.4s ease',
-                        }}
-                    />
+                    <Card.Section>
+                        <Image
+                            src={image}
+                            height={200}
+                            alt={displayName}
+                            onError={() => setImageError(true)}
+                            style={{
+                                transition: 'transform 0.4s ease',
+                            }}
+                        />
+                    </Card.Section>
                 ) : (
-                    <Box
-                        sx={{
-                            height: 200,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
-                            color: 'white',
-                        }}
-                    >
-                        <ContentCut sx={{ fontSize: 64, opacity: 0.7 }} />
-                    </Box>
+                    <Card.Section>
+                        <Box
+                            style={{
+                                height: 200,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
+                                color: 'white',
+                            }}
+                        >
+                            <IconScissors size={64} opacity={0.7} />
+                        </Box>
+                    </Card.Section>
                 )}
 
-                <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
-                    <Chip
-                        label={`₹${displayPrice}`}
-                        color="secondary"
-                        sx={{
-                            fontWeight: 700,
-                            fontSize: '1.1rem',
-                            px: 1,
-                        }}
-                    />
+                <Box style={{ position: 'absolute', top: 16, right: 16, zIndex: 10 }}>
+                    <Badge color="amber" size="lg" variant="filled">
+                        ₹{displayPrice}
+                    </Badge>
                 </Box>
 
-                <CardContent sx={{ flexGrow: 1, pt: 3 }}>
-                    <Typography gutterBottom variant="h5" component="h3" fontWeight={700} sx={{ minHeight: 64 }}>
+                <Box style={{ flexGrow: 1, paddingTop: '1rem' }}>
+                    <Text size="xl" fw={700} style={{ minHeight: 64 }}>
                         {displayName}
-                    </Typography>
-                    <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{
-                            mt: 1,
-                            display: '-webkit-box',
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            minHeight: 40,
-                        }}
+                    </Text>
+                    <Text
+                        size="sm"
+                        c="dimmed"
+                        mt="xs"
+                        lineClamp={2}
+                        style={{ minHeight: 40 }}
                     >
                         {description || 'Premium grooming service tailored for you'}
-                    </Typography>
-                </CardContent>
+                    </Text>
+                </Box>
 
-                <CardActions sx={{ p: 2, pt: 0 }}>
-                    <Button
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        onClick={() => onBook && onBook(service)}
-                        sx={{
-                            py: 1.2,
+                <Button
+                    fullWidth
+                    color="amber"
+                    onClick={() => onBook && onBook(service)}
+                    mt="md"
+                    styles={{
+                        root: {
                             fontWeight: 600,
-                        }}
-                    >
-                        Book Now
-                    </Button>
-                </CardActions>
+                        },
+                    }}
+                >
+                    Book Now
+                </Button>
             </Card>
         </motion.div>
     );

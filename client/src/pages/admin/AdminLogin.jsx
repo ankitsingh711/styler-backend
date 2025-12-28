@@ -6,21 +6,19 @@ import {
     Box,
     Container,
     Paper,
-    TextField,
+    TextInput,
+    PasswordInput,
     Button,
-    Typography,
-    InputAdornment,
-    IconButton,
+    Title,
+    Text,
     Stack,
-    alpha,
-} from '@mui/material';
+    rem,
+} from '@mantine/core';
 import {
-    Visibility,
-    VisibilityOff,
-    Email,
-    Lock,
-    AdminPanelSettings,
-} from '@mui/icons-material';
+    IconMail,
+    IconLock,
+    IconShieldLock,
+} from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { authService } from '../../services/authService';
 import { useAuth } from '../../context/AuthContext';
@@ -31,7 +29,6 @@ import { adminLoginSchema } from '../../utils/validationSchemas';
 const MotionPaper = motion(Paper);
 
 const AdminLogin = () => {
-    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuth();
     const { success, error: showError } = useToast();
@@ -70,31 +67,30 @@ const AdminLogin = () => {
 
     return (
         <Box
-            sx={{
+            style={{
                 minHeight: '100vh',
                 display: 'flex',
                 alignItems: 'center',
                 background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-                py: 4,
+                padding: '2rem 0',
             }}
         >
-            <Container maxWidth="sm">
+            <Container size="sm">
                 <MotionPaper
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
-                    elevation={24}
-                    sx={{
-                        p: 5,
-                        borderRadius: 4,
-                        border: '1px solid',
-                        borderColor: alpha('#f59e0b', 0.2),
+                    shadow="xl"
+                    p="xl"
+                    radius="lg"
+                    style={{
+                        border: '1px solid rgba(245, 158, 11, 0.2)',
                     }}
                 >
                     {/* Header */}
-                    <Box sx={{ mb: 4, textAlign: 'center' }}>
+                    <Box style={{ marginBottom: rem(32), textAlign: 'center' }}>
                         <Box
-                            sx={{
+                            style={{
                                 width: 80,
                                 height: 80,
                                 borderRadius: '50%',
@@ -102,82 +98,56 @@ const AdminLogin = () => {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                mx: 'auto',
-                                mb: 3,
+                                margin: '0 auto',
+                                marginBottom: rem(24),
                             }}
                         >
-                            <AdminPanelSettings sx={{ fontSize: 40, color: 'secondary.main' }} />
+                            <IconShieldLock size={40} color="#f59e0b" />
                         </Box>
-                        <Typography variant="h3" fontWeight={800} gutterBottom>
+                        <Title order={2} fw={800} mb="xs">
                             Admin Login
-                        </Typography>
-                        <Typography variant="body1" color="text.secondary">
+                        </Title>
+                        <Text c="dimmed">
                             Access the admin dashboard
-                        </Typography>
+                        </Text>
                     </Box>
 
                     {/* Form */}
                     <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-                        <Stack spacing={3}>
-                            <TextField
-                                fullWidth
+                        <Stack gap="md">
+                            <TextInput
                                 label="Admin Email"
+                                placeholder="admin@email.com"
                                 type="email"
+                                leftSection={<IconMail size={16} />}
                                 {...register('email')}
-                                error={!!errors.email}
-                                helperText={errors.email?.message}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <Email />
-                                        </InputAdornment>
-                                    ),
-                                }}
+                                error={errors.email?.message}
                             />
 
-                            <TextField
-                                fullWidth
+                            <PasswordInput
                                 label="Password"
-                                type={showPassword ? 'text' : 'password'}
+                                placeholder="Enter your password"
+                                leftSection={<IconLock size={16} />}
                                 {...register('password')}
-                                error={!!errors.password}
-                                helperText={errors.password?.message}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <Lock />
-                                        </InputAdornment>
-                                    ),
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                onClick={() => setShowPassword(!showPassword)}
-                                                edge="end"
-                                            >
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
+                                error={errors.password?.message}
                             />
 
                             <Button
                                 type="submit"
                                 fullWidth
-                                variant="contained"
-                                size="large"
-                                disabled={isSubmitting}
-                                sx={{
-                                    py: 1.5,
-                                    fontWeight: 700,
-                                    fontSize: '1.1rem',
-                                    background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
-                                    '&:hover': {
-                                        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                                size="lg"
+                                loading={isSubmitting}
+                                styles={{
+                                    root: {
+                                        fontWeight: 700,
+                                        background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
+                                        '&:hover': {
+                                            background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                                        },
                                     },
                                 }}
                             >
-                                {isSubmitting ? 'Logging in...' : 'Login'}
+                                Login
                             </Button>
                         </Stack>
                     </Box>

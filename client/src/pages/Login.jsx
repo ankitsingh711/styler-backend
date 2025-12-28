@@ -6,29 +6,25 @@ import {
     Box,
     Container,
     Paper,
-    TextField,
+    TextInput,
+    PasswordInput,
     Button,
-    Typography,
+    Title,
+    Text,
     Tabs,
-    Tab,
-    InputAdornment,
-    IconButton,
-    Alert,
     Stack,
     Divider,
-    alpha,
-} from '@mui/material';
+    rem,
+} from '@mantine/core';
 import {
-    Visibility,
-    VisibilityOff,
-    Person,
-    Email,
-    Lock,
-    Phone,
-    Login as LoginIcon,
-    AppRegistration,
-    ArrowBack,
-} from '@mui/icons-material';
+    IconUser,
+    IconMail,
+    IconLock,
+    IconPhone,
+    IconLogin,
+    IconUserPlus,
+    IconArrowLeft,
+} from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { authService } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
@@ -40,8 +36,8 @@ const MotionBox = motion(Box);
 const MotionPaper = motion(Paper);
 
 const Login = ({ isRegisterMode = false }) => {
-    const [isLogin, setIsLogin] = useState(!isRegisterMode);
-    const [showPassword, setShowPassword] = useState(false);
+    const [activeTab, setActiveTab] = useState(isRegisterMode ? 'signup' : 'login');
+    const isLogin = activeTab === 'login';
 
     const navigate = useNavigate();
     const { login: authLogin } = useAuth();
@@ -57,8 +53,8 @@ const Login = ({ isRegisterMode = false }) => {
         mode: 'onBlur'
     });
 
-    const switchMode = (loginMode) => {
-        setIsLogin(loginMode);
+    const switchMode = (tab) => {
+        setActiveTab(tab);
         reset();
     };
 
@@ -99,7 +95,7 @@ const Login = ({ isRegisterMode = false }) => {
                     success('Account created successfully! Welcome aboard.');
                     setTimeout(() => navigate('/profile'), 500);
                 } else {
-                    switchMode(true);
+                    switchMode('login');
                     success('Registration successful! Please login.');
                 }
             }
@@ -111,61 +107,50 @@ const Login = ({ isRegisterMode = false }) => {
 
     return (
         <Box
-            sx={{
+            style={{
                 minHeight: '100vh',
                 display: 'flex',
                 alignItems: 'center',
                 background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
-                py: 4,
+                padding: '2rem 0',
             }}
         >
-            <Container maxWidth="sm">
+            <Container size="sm">
                 <MotionPaper
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
-                    elevation={24}
-                    sx={{
-                        p: 4,
-                        borderRadius: 4,
-                    }}
+                    shadow="xl"
+                    p="xl"
+                    radius="lg"
                 >
                     {/* Header */}
-                    <Box sx={{ mb: 4, textAlign: 'center' }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+                    <Box style={{ marginBottom: rem(32), textAlign: 'center' }}>
+                        <Box style={{ display: 'flex', justifyContent: 'center', marginBottom: rem(24) }}>
                             <img
                                 src="/images/styler-logo.png"
                                 alt="Styler"
                                 style={{ height: 50, width: 'auto' }}
                             />
                         </Box>
-                        <Typography variant="h4" fontWeight={800} gutterBottom>
+                        <Title order={2} fw={800} mb="xs">
                             {isLogin ? 'Welcome Back' : 'Create Account'}
-                        </Typography>
-                        <Typography variant="body1" color="text.secondary">
+                        </Title>
+                        <Text c="dimmed">
                             {isLogin ? 'Login to book your appointment' : 'Sign up to get started'}
-                        </Typography>
+                        </Text>
                     </Box>
 
                     {/* Tabs */}
-                    <Tabs
-                        value={isLogin ? 0 : 1}
-                        onChange={(e, newValue) => switchMode(newValue === 0)}
-                        variant="fullWidth"
-                        sx={{ mb: 4 }}
-                    >
-                        <Tab
-                            label="Login"
-                            icon={<LoginIcon />}
-                            iconPosition="start"
-                            sx={{ fontWeight: 600 }}
-                        />
-                        <Tab
-                            label="Sign Up"
-                            icon={<AppRegistration />}
-                            iconPosition="start"
-                            sx={{ fontWeight: 600 }}
-                        />
+                    <Tabs value={activeTab} onChange={switchMode} mb="xl">
+                        <Tabs.List grow>
+                            <Tabs.Tab value="login" leftSection={<IconLogin size={16} />}>
+                                Login
+                            </Tabs.Tab>
+                            <Tabs.Tab value="signup" leftSection={<IconUserPlus size={16} />}>
+                                Sign Up
+                            </Tabs.Tab>
+                        </Tabs.List>
                     </Tabs>
 
                     {/* Form */}
@@ -178,111 +163,73 @@ const Login = ({ isRegisterMode = false }) => {
                                 exit={{ opacity: 0, x: -20 }}
                                 transition={{ duration: 0.3 }}
                             >
-                                <Stack spacing={3}>
+                                <Stack gap="md">
                                     {!isLogin && (
-                                        <TextField
-                                            fullWidth
+                                        <TextInput
                                             label="Full Name"
+                                            placeholder="Enter your full name"
+                                            leftSection={<IconUser size={16} />}
                                             {...register('name')}
-                                            error={!!errors.name}
-                                            helperText={errors.name?.message}
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <Person />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
+                                            error={errors.name?.message}
                                         />
                                     )}
 
-                                    <TextField
-                                        fullWidth
+                                    <TextInput
                                         label="Email Address"
+                                        placeholder="your@email.com"
                                         type="email"
+                                        leftSection={<IconMail size={16} />}
                                         {...register('email')}
-                                        error={!!errors.email}
-                                        helperText={errors.email?.message}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <Email />
-                                                </InputAdornment>
-                                            ),
-                                        }}
+                                        error={errors.email?.message}
                                     />
 
                                     {!isLogin && (
-                                        <TextField
-                                            fullWidth
+                                        <TextInput
                                             label="Phone Number"
+                                            placeholder="+91 XXXXX XXXXX"
+                                            leftSection={<IconPhone size={16} />}
                                             {...register('phone')}
-                                            error={!!errors.phone}
-                                            helperText={errors.phone?.message}
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <Phone />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
+                                            error={errors.phone?.message}
                                         />
                                     )}
 
-                                    <TextField
-                                        fullWidth
+                                    <PasswordInput
                                         label="Password"
-                                        type={showPassword ? 'text' : 'password'}
+                                        placeholder="Enter your password"
+                                        leftSection={<IconLock size={16} />}
                                         {...register('password')}
-                                        error={!!errors.password}
-                                        helperText={errors.password?.message}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <Lock />
-                                                </InputAdornment>
-                                            ),
-                                            endAdornment: (
-                                                <InputAdornment position="end">
-                                                    <IconButton
-                                                        onClick={() => setShowPassword(!showPassword)}
-                                                        edge="end"
-                                                    >
-                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                    </IconButton>
-                                                </InputAdornment>
-                                            ),
-                                        }}
+                                        error={errors.password?.message}
                                     />
 
                                     <Button
                                         type="submit"
                                         fullWidth
-                                        variant="contained"
-                                        size="large"
-                                        disabled={isSubmitting}
-                                        sx={{
-                                            py: 1.5,
-                                            fontWeight: 700,
-                                            fontSize: '1.1rem',
+                                        size="lg"
+                                        color="amber"
+                                        loading={isSubmitting}
+                                        styles={{
+                                            root: {
+                                                fontWeight: 700,
+                                            },
                                         }}
                                     >
-                                        {isSubmitting ? 'Processing...' : (isLogin ? 'Login' : 'Sign Up')}
+                                        {isLogin ? 'Login' : 'Sign Up'}
                                     </Button>
                                 </Stack>
                             </MotionBox>
                         </AnimatePresence>
                     </Box>
 
-                    <Divider sx={{ my: 3 }} />
+                    <Divider my="xl" />
 
                     {/* Footer */}
-                    <Box sx={{ textAlign: 'center' }}>
+                    <Box style={{ textAlign: 'center' }}>
                         <Button
                             component={Link}
                             to="/"
-                            startIcon={<ArrowBack />}
-                            sx={{ fontWeight: 600 }}
+                            variant="subtle"
+                            color="gray"
+                            leftSection={<IconArrowLeft size={16} />}
                         >
                             Back to Home
                         </Button>

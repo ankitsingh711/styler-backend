@@ -3,33 +3,29 @@ import { useNavigate } from 'react-router-dom';
 import {
     Box,
     Container,
-    Typography,
+    Title,
+    Text,
     Paper,
     Grid,
     Avatar,
     Divider,
     Card,
-    CardContent,
-    Chip,
+    Badge,
     Button,
     Stack,
     Skeleton,
-    Alert,
-    List,
-    ListItem,
-    ListItemText,
-    ListItemIcon,
-    alpha,
-} from '@mui/material';
+    Group,
+    rem,
+} from '@mantine/core';
 import {
-    Person,
-    Email,
-    CalendarMonth,
-    AccessTime,
-    ContentCut,
-    Logout,
-    EventAvailable,
-} from '@mui/icons-material';
+    IconUser,
+    IconMail,
+    IconCalendar,
+    IconClock,
+    IconScissors,
+    IconLogout,
+    IconCalendarEvent,
+} from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { bookingService } from '../services/bookingService';
 import { useAuth } from '../context/AuthContext';
@@ -74,23 +70,24 @@ const Profile = () => {
 
     const getStatusColor = (status) => {
         const statusMap = {
-            'Pending': 'warning',
-            'Complete': 'success',
-            'Approved': 'info',
-            'Cancel': 'error',
+            'Pending': 'yellow',
+            'Complete': 'green',
+            'Approved': 'blue',
+            'Cancel': 'red',
         };
-        return statusMap[status] || 'default';
+        return statusMap[status] || 'gray';
     };
 
     return (
-        <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 4 }}>
+        <Box style={{ backgroundColor: '#f8f9fa', minHeight: '100vh', paddingTop: rem(32), paddingBottom: rem(32) }}>
             {/* Header */}
             <Box
-                sx={{
+                style={{
                     background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
                     color: 'white',
-                    py: { xs: 6, md: 8 },
-                    mb: 4,
+                    paddingTop: rem(48),
+                    paddingBottom: rem(48),
+                    marginBottom: rem(32),
                 }}
             >
                 <Container>
@@ -99,117 +96,126 @@ const Profile = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
                     >
-                        <Stack direction="row" spacing={3} alignItems="center">
+                        <Group>
                             <Avatar
-                                sx={{
-                                    width: { xs: 80, md: 120 },
-                                    height: { xs: 80, md: 120 },
-                                    bgcolor: 'secondary.main',
-                                    fontSize: { xs: '2rem', md: '3rem' },
-                                    fontWeight: 800,
+                                size="xl"
+                                color="amber"
+                                styles={{
+                                    root: {
+                                        fontSize: rem(48),
+                                        fontWeight: 800,
+                                    },
                                 }}
                             >
                                 {user?.userName?.[0]?.toUpperCase() || 'U'}
                             </Avatar>
                             <Box>
-                                <Typography variant="h3" fontWeight={800} gutterBottom>
+                                <Title order={2} fw={800} c="white" mb="xs">
                                     {user?.userName || 'User'}
-                                </Typography>
-                                <Typography variant="h6" sx={{ opacity: 0.9 }}>
+                                </Title>
+                                <Text size="lg" c="white" opacity={0.9}>
                                     {user?.email}
-                                </Typography>
+                                </Text>
                             </Box>
-                        </Stack>
+                        </Group>
                     </MotionBox>
                 </Container>
             </Box>
 
             <Container>
-                <Grid container spacing={4}>
+                <Grid gutter="xl">
                     {/* User Info Card */}
-                    <Grid item xs={12} md={4}>
+                    <Grid.Col span={{ base: 12, md: 4 }}>
                         <MotionBox
                             initial={{ opacity: 0, x: -30 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.6 }}
                         >
-                            <Paper elevation={2} sx={{ p: 3, borderRadius: 4 }}>
-                                <Typography variant="h5" fontWeight={700} gutterBottom>
+                            <Paper shadow="sm" p="xl" radius="lg">
+                                <Title order={4} fw={700} mb="md">
                                     Personal Information
-                                </Typography>
-                                <Divider sx={{ my: 2 }} />
+                                </Title>
+                                <Divider mb="md" />
 
-                                <List>
-                                    <ListItem sx={{ px: 0 }}>
-                                        <ListItemIcon>
-                                            <Person color="primary" />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary="Full Name"
-                                            secondary={user?.userName || 'User'}
-                                            primaryTypographyProps={{ variant: 'body2', color: 'text.secondary' }}
-                                            secondaryTypographyProps={{ variant: 'body1', fontWeight: 600 }}
-                                        />
-                                    </ListItem>
+                                <Stack gap="lg">
+                                    <Box>
+                                        <Group gap="xs" mb="xs">
+                                            <IconUser size={20} color="#f59e0b" />
+                                            <Text size="sm" c="dimmed" fw={600}>
+                                                FULL NAME
+                                            </Text>
+                                        </Group>
+                                        <Text fw={600}>
+                                            {user?.userName || 'User'}
+                                        </Text>
+                                    </Box>
 
-                                    <ListItem sx={{ px: 0 }}>
-                                        <ListItemIcon>
-                                            <Email color="primary" />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary="Email Address"
-                                            secondary={user?.email}
-                                            primaryTypographyProps={{ variant: 'body2', color: 'text.secondary' }}
-                                            secondaryTypographyProps={{ variant: 'body1', fontWeight: 600 }}
-                                        />
-                                    </ListItem>
-                                </List>
+                                    <Box>
+                                        <Group gap="xs" mb="xs">
+                                            <IconMail size={20} color="#f59e0b" />
+                                            <Text size="sm" c="dimmed" fw={600}>
+                                                EMAIL ADDRESS
+                                            </Text>
+                                        </Group>
+                                        <Text fw={600}>
+                                            {user?.email}
+                                        </Text>
+                                    </Box>
+                                </Stack>
 
                                 <Button
                                     fullWidth
-                                    variant="outlined"
-                                    color="error"
-                                    startIcon={<Logout />}
+                                    variant="outline"
+                                    color="red"
+                                    leftSection={<IconLogout size={16} />}
                                     onClick={handleLogout}
-                                    sx={{ mt: 3, py: 1.2, fontWeight: 600 }}
+                                    mt="xl"
+                                    styles={{
+                                        root: {
+                                            fontWeight: 600,
+                                        },
+                                    }}
                                 >
                                     Logout
                                 </Button>
                             </Paper>
                         </MotionBox>
-                    </Grid>
+                    </Grid.Col>
 
                     {/* Appointments Section */}
-                    <Grid item xs={12} md={8}>
+                    <Grid.Col span={{ base: 12, md: 8 }}>
                         <MotionBox
                             initial={{ opacity: 0, x: 30 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.6, delay: 0.2 }}
                         >
-                            <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Typography variant="h4" fontWeight={700}>
+                            <Group justify="space-between" mb="lg">
+                                <Title order={3} fw={700}>
                                     My Appointments
-                                </Typography>
+                                </Title>
                                 <Button
-                                    variant="contained"
-                                    color="primary"
-                                    startIcon={<EventAvailable />}
+                                    color="amber"
+                                    leftSection={<IconCalendarEvent size={16} />}
                                     onClick={() => navigate('/services')}
-                                    sx={{ fontWeight: 600 }}
+                                    styles={{
+                                        root: {
+                                            fontWeight: 600,
+                                        },
+                                    }}
                                 >
                                     Book New
                                 </Button>
-                            </Box>
+                            </Group>
 
                             {loading ? (
-                                <Stack spacing={2}>
+                                <Stack gap="md">
                                     {[1, 2, 3].map((item) => (
-                                        <Skeleton key={item} variant="rectangular" height={200} sx={{ borderRadius: 4 }} />
+                                        <Skeleton key={item} height={200} radius="lg" />
                                     ))}
                                 </Stack>
                             ) : appointments.length > 0 ? (
                                 <AnimatePresence>
-                                    <Stack spacing={3}>
+                                    <Stack gap="md">
                                         {appointments.map((appointment, index) => (
                                             <MotionCard
                                                 key={appointment._id}
@@ -217,127 +223,127 @@ const Profile = () => {
                                                 animate={{ opacity: 1, y: 0 }}
                                                 exit={{ opacity: 0, y: -20 }}
                                                 transition={{ duration: 0.4, delay: index * 0.1 }}
-                                                elevation={2}
-                                                sx={{
-                                                    borderRadius: 4,
-                                                    overflow: 'hidden',
-                                                    border: '1px solid',
-                                                    borderColor: 'divider',
-                                                }}
+                                                shadow="sm"
+                                                padding="lg"
+                                                radius="lg"
+                                                withBorder
                                             >
                                                 <Box
-                                                    sx={{
-                                                        background: `linear-gradient(135deg, ${alpha('#1e293b', 0.05)} 0%, ${alpha('#f59e0b', 0.05)} 100%)`,
-                                                        p: 2,
-                                                        borderBottom: '1px solid',
-                                                        borderColor: 'divider',
+                                                    style={{
+                                                        background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.05) 0%, rgba(245, 158, 11, 0.05) 100%)',
+                                                        padding: rem(16),
+                                                        marginBottom: rem(16),
+                                                        borderRadius: rem(8),
                                                     }}
                                                 >
-                                                    <Stack direction="row" justifyContent="space-between" alignItems="center">
-                                                        <Typography variant="h6" fontWeight={700}>
+                                                    <Group justify="space-between">
+                                                        <Text fw={700} size="lg">
                                                             Appointment #{appointment._id?.slice(-6)}
-                                                        </Typography>
-                                                        <Chip
-                                                            label={appointment.status || 'Pending'}
+                                                        </Text>
+                                                        <Badge
                                                             color={getStatusColor(appointment.status)}
-                                                            sx={{ fontWeight: 600 }}
-                                                        />
-                                                    </Stack>
+                                                            variant="filled"
+                                                            size="lg"
+                                                        >
+                                                            {appointment.status || 'Pending'}
+                                                        </Badge>
+                                                    </Group>
                                                 </Box>
 
-                                                <CardContent sx={{ p: 3 }}>
-                                                    <Grid container spacing={3}>
-                                                        <Grid item xs={12} sm={6}>
-                                                            <Stack spacing={2}>
-                                                                <Box>
-                                                                    <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
-                                                                        <Person sx={{ fontSize: 20, color: 'text.secondary' }} />
-                                                                        <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                                                                            STYLER
-                                                                        </Typography>
-                                                                    </Stack>
-                                                                    <Typography variant="body1" fontWeight={600}>
-                                                                        {appointment.styler?.name || appointment.stylerName || 'N/A'}
-                                                                    </Typography>
-                                                                </Box>
+                                                <Grid>
+                                                    <Grid.Col span={{ base: 12, sm: 6 }}>
+                                                        <Stack gap="md">
+                                                            <Box>
+                                                                <Group gap="xs" mb="xs">
+                                                                    <IconUser size={20} opacity={0.7} />
+                                                                    <Text size="xs" c="dimmed" fw={600} tt="uppercase">
+                                                                        Styler
+                                                                    </Text>
+                                                                </Group>
+                                                                <Text fw={600}>
+                                                                    {appointment.styler?.name || appointment.stylerName || 'N/A'}
+                                                                </Text>
+                                                            </Box>
 
-                                                                <Box>
-                                                                    <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
-                                                                        <ContentCut sx={{ fontSize: 20, color: 'text.secondary' }} />
-                                                                        <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                                                                            SERVICE
-                                                                        </Typography>
-                                                                    </Stack>
-                                                                    <Typography variant="body1" fontWeight={600}>
-                                                                        {appointment.service?.name || appointment.serviceName || 'N/A'}
-                                                                    </Typography>
-                                                                </Box>
-                                                            </Stack>
-                                                        </Grid>
+                                                            <Box>
+                                                                <Group gap="xs" mb="xs">
+                                                                    <IconScissors size={20} opacity={0.7} />
+                                                                    <Text size="xs" c="dimmed" fw={600} tt="uppercase">
+                                                                        Service
+                                                                    </Text>
+                                                                </Group>
+                                                                <Text fw={600}>
+                                                                    {appointment.service?.name || appointment.serviceName || 'N/A'}
+                                                                </Text>
+                                                            </Box>
+                                                        </Stack>
+                                                    </Grid.Col>
 
-                                                        <Grid item xs={12} sm={6}>
-                                                            <Stack spacing={2}>
-                                                                <Box>
-                                                                    <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
-                                                                        <CalendarMonth sx={{ fontSize: 20, color: 'text.secondary' }} />
-                                                                        <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                                                                            DATE
-                                                                        </Typography>
-                                                                    </Stack>
-                                                                    <Typography variant="body1" fontWeight={600}>
-                                                                        {formatDate(appointment.date)}
-                                                                    </Typography>
-                                                                </Box>
+                                                    <Grid.Col span={{ base: 12, sm: 6 }}>
+                                                        <Stack gap="md">
+                                                            <Box>
+                                                                <Group gap="xs" mb="xs">
+                                                                    <IconCalendar size={20} opacity={0.7} />
+                                                                    <Text size="xs" c="dimmed" fw={600} tt="uppercase">
+                                                                        Date
+                                                                    </Text>
+                                                                </Group>
+                                                                <Text fw={600}>
+                                                                    {formatDate(appointment.date)}
+                                                                </Text>
+                                                            </Box>
 
-                                                                <Box>
-                                                                    <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
-                                                                        <AccessTime sx={{ fontSize: 20, color: 'text.secondary' }} />
-                                                                        <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                                                                            TIME
-                                                                        </Typography>
-                                                                    </Stack>
-                                                                    <Typography variant="body1" fontWeight={600}>
-                                                                        {appointment.time || 'N/A'}
-                                                                    </Typography>
-                                                                </Box>
-                                                            </Stack>
-                                                        </Grid>
-                                                    </Grid>
-                                                </CardContent>
+                                                            <Box>
+                                                                <Group gap="xs" mb="xs">
+                                                                    <IconClock size={20} opacity={0.7} />
+                                                                    <Text size="xs" c="dimmed" fw={600} tt="uppercase">
+                                                                        Time
+                                                                    </Text>
+                                                                </Group>
+                                                                <Text fw={600}>
+                                                                    {appointment.time || 'N/A'}
+                                                                </Text>
+                                                            </Box>
+                                                        </Stack>
+                                                    </Grid.Col>
+                                                </Grid>
                                             </MotionCard>
                                         ))}
                                     </Stack>
                                 </AnimatePresence>
                             ) : (
                                 <Paper
-                                    sx={{
-                                        p: 6,
+                                    p="xl"
+                                    radius="lg"
+                                    style={{
                                         textAlign: 'center',
-                                        borderRadius: 4,
-                                        background: `linear-gradient(135deg, ${alpha('#1e293b', 0.03)} 0%, ${alpha('#f59e0b', 0.03)} 100%)`,
+                                        background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.03) 0%, rgba(245, 158, 11, 0.03) 100%)',
                                     }}
                                 >
-                                    <EventAvailable sx={{ fontSize: 80, color: 'text.secondary', mb: 2, opacity: 0.5 }} />
-                                    <Typography variant="h5" fontWeight={700} gutterBottom>
+                                    <IconCalendarEvent size={80} opacity={0.5} style={{ margin: '0 auto', marginBottom: rem(16) }} />
+                                    <Title order={4} fw={700} mb="xs">
                                         No Appointments Yet
-                                    </Typography>
-                                    <Typography color="text.secondary" sx={{ mb: 3 }}>
+                                    </Title>
+                                    <Text c="dimmed" mb="xl">
                                         You haven't booked any appointments. Start your grooming journey today!
-                                    </Typography>
+                                    </Text>
                                     <Button
-                                        variant="contained"
-                                        color="primary"
-                                        size="large"
+                                        color="amber"
+                                        size="lg"
                                         onClick={() => navigate('/services')}
-                                        startIcon={<EventAvailable />}
-                                        sx={{ py: 1.5, px: 4, fontWeight: 700 }}
+                                        leftSection={<IconCalendarEvent size={20} />}
+                                        styles={{
+                                            root: {
+                                                fontWeight: 700,
+                                            },
+                                        }}
                                     >
                                         Book an Appointment
                                     </Button>
                                 </Paper>
                             )}
                         </MotionBox>
-                    </Grid>
+                    </Grid.Col>
                 </Grid>
             </Container>
         </Box>

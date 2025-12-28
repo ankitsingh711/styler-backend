@@ -3,25 +3,26 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
     Box,
     Container,
-    Typography,
+    Title,
+    Text,
     Button,
     Grid,
     Card,
-    CardMedia,
-    CardContent,
+    Image,
     Paper,
     Stack,
-    Chip,
-    alpha,
-    CircularProgress,
-} from '@mui/material';
+    Badge,
+    Loader,
+    Group,
+    rem,
+} from '@mantine/core';
 import {
-    ArrowForward,
-    ContentCut,
-    Star,
-    LocationOn,
-    Phone,
-} from '@mui/icons-material';
+    IconArrowRight,
+    IconScissors,
+    IconStar,
+    IconMapPin,
+    IconPhone,
+} from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import StatCard from '../components/common/StatCard';
 import { useAuth } from '../context/AuthContext';
@@ -29,13 +30,6 @@ import { fetchStats } from '../services/statsService';
 
 const MotionBox = motion(Box);
 const MotionPaper = motion(Paper);
-
-// Icon mapping for backend data - defined outside component for stability
-const iconMap = {
-    location: LocationOn,
-    star: Star,
-    scissors: ContentCut,
-};
 
 // Color mapping for backend data
 const colorMap = {
@@ -49,44 +43,30 @@ const colorMap = {
 
 const Home = () => {
     const navigate = useNavigate();
-    const { isAuthenticated } = useAuth();
+    const { user } = useAuth();
 
-    // State for dynamic statistics
+    // State for dynamic stats
     const [stats, setStats] = useState([]);
     const [statsLoading, setStatsLoading] = useState(true);
-    const [statsError, setStatsError] = useState(null);
 
-    // Fetch statistics on component mount
+    // Fetch stats on component mount
     useEffect(() => {
         const loadStats = async () => {
             try {
-                setStatsLoading(true);
-                const response = await fetchStats();
-                if (response.success && response.data.stats) {
-                    // Map backend data to component format
-                    const formattedStats = response.data.stats.map(stat => ({
-                        iconName: stat.icon, // Store icon name instead of component
-                        title: stat.title,
-                        count: `${stat.count}${stat.count >= 100 ? '+' : ''}`,
-                        color: colorMap[stat.icon] || '#f59e0b',
-                        trend: stat.trend,
-                    }));
-                    setStats(formattedStats);
-                    setStatsError(null);
-                }
+                const data = await fetchStats();
+                setStats(data);
+                setStatsLoading(false);
             } catch (error) {
                 console.error('Error loading stats:', error);
-                setStatsError('Failed to load statistics');
-                // Fallback to default stats on error
+                // Fallback to default stats
                 setStats([
-                    { iconName: 'location', title: 'Branches', count: '162+', color: '#f59e0b', trend: 12 },
-                    { iconName: 'star', title: 'Happy Clients', count: '50000+', color: '#14b8a6', trend: 8 },
-                    { iconName: 'scissors', title: 'Expert Stylists', count: '6000+', color: '#1e293b', trend: 5 },
-                    { iconName: 'calendar', title: 'Total Appointments', count: '125000+', color: '#8b5cf6', trend: 15 },
-                    { iconName: 'heart', title: 'Customer Satisfaction', count: '98%', color: '#ec4899', trend: 2 },
-                    { iconName: 'trophy', title: 'Years in Business', count: '15+', color: '#f97316', trend: 0 },
+                    { iconName: 'location', title: 'Branches', count: '20+', color: colorMap.location },
+                    { iconName: 'star', title: 'Happy Clients', count: '5000+', color: colorMap.star },
+                    { iconName: 'scissors', title: 'Expert Stylists', count: '150+', color: colorMap.scissors },
+                    { iconName: 'calendar', title: 'Total Appointments', count: '10K+', color: colorMap.calendar },
+                    { iconName: 'heart', title: 'Customer Satisfaction', count: '98%', color: colorMap.heart },
+                    { iconName: 'trophy', title: 'Years in Business', count: '15+', color: colorMap.trophy },
                 ]);
-            } finally {
                 setStatsLoading(false);
             }
         };
@@ -96,24 +76,24 @@ const Home = () => {
 
     const services = [
         {
-            title: 'HAIR STYLING',
-            image: 'https://d3r0z4awu7ba6n.cloudfront.net/images/looks/homeBanner/1.jpg',
-            description: 'Expert cuts and styling for all occasions',
+            title: 'Hair Styling',
+            description: 'Professional cuts and styles for every occasion',
+            image: 'https://d3r0z4awu7ba6n.cloudfront.net/images/services/hair-styling.jpg',
         },
         {
-            title: 'MAKEUP & BEAUTY',
-            image: 'https://d3r0z4awu7ba6n.cloudfront.net/images/looks/homeBanner/2.jpg',
-            description: 'Professional makeup and beauty services',
+            title: 'Makeup & Beauty',
+            description: 'Expert makeup for weddings and special events',
+            image: 'https://d3r0z4awu7ba6n.cloudfront.net/images/services/makeup.jpg',
         },
         {
-            title: 'SPA & WELLNESS',
-            image: 'https://d3r0z4awu7ba6n.cloudfront.net/images/looks/homeBanner/6.jpg',
-            description: 'Relaxing spa treatments and wellness care',
+            title: 'Spa & Wellness',
+            description: 'Relax and rejuvenate with our spa treatments',
+            image: 'https://d3r0z4awu7ba6n.cloudfront.net/images/services/spa.jpg',
         },
         {
-            title: 'NAIL CARE',
-            image: 'https://d3r0z4awu7ba6n.cloudfront.net/images/looks/homeBanner/4.jpg',
+            title: 'Nail Care',
             description: 'Manicures, pedicures, and nail art',
+            image: 'https://d3r0z4awu7ba6n.cloudfront.net/images/services/nails.jpg',
         },
     ];
 
@@ -125,167 +105,172 @@ const Home = () => {
     ];
 
     const partners = [
-        'https://www.lookssalon.in/public/images//brands/Loreal_edited.webp',
-        'https://www.lookssalon.in/public/images//brands/Kerastase-Logo.webp',
-        'https://www.lookssalon.in/public/images//brands/olaplex-vector-logo_edited.webp',
-        'https://www.lookssalon.in/public/images//brands/Moroccanoil-Logo.webp',
-        'https://www.lookssalon.in/public/images//brands/biotop.webp',
-        'https://www.lookssalon.in/public/images//brands/wahl-logo.webp',
-        'https://www.lookssalon.in/public/images//brands/dyson.webp',
-        'https://www.lookssalon.in/public/images//brands/american-crew.webp',
+        { name: 'L\'Oreal', logo: '/partners/loreal.png' },
+        { name: 'Schwarzkopf', logo: '/partners/schwarzkopf.png' },
+        { name: 'Wella', logo: '/partners/wella.png' },
+        { name: 'Redken', logo: '/partners/redken.png' },
     ];
 
     return (
-        <Box sx={{ bgcolor: 'background.default' }}>
+        <Box>
             {/* Hero Section */}
             <Box
-                sx={{
+                style={{
+                    minHeight: '100vh',
                     position: 'relative',
-                    height: { xs: '65vh', sm: '70vh', md: '80vh' },
                     display: 'flex',
                     alignItems: 'center',
+                    background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
                     overflow: 'hidden',
-                    '&::before': {
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundImage: 'url(https://www.lookssalon.in/public/images/innerBanner/service-men-1.jpg)',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        filter: 'brightness(0.7)',
-                        zIndex: 0,
-                    },
                 }}
             >
-                <Container sx={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+                {/* Background Pattern */}
+                <Box
+                    style={{
+                        position: 'absolute',
+                        inset: 0,
+                        opacity: 0.1,
+                        backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(245, 158, 11, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.3) 0%, transparent 50%)',
+                    }}
+                />
+
+                <Container size="lg" style={{ position: 'relative', zIndex: 1 }}>
                     <MotionBox
-                        initial={{ opacity: 0, y: 50 }}
+                        initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
-                        sx={{ maxWidth: 800 }}
+                        style={{ textAlign: 'center' }}
                     >
-                        <Chip
-                            label="PREMIUM GROOMING EXPERIENCE"
-                            sx={{
-                                mb: 3,
-                                bgcolor: alpha('#f59e0b', 0.9),
+                        <Badge
+                            size="lg"
+                            variant="dot"
+                            color="amber"
+                            mb="xl"
+                        >
+                            Premium Styling Services
+                        </Badge>
+
+                        <Title
+                            order={1}
+                            style={{
+                                fontSize: rem(72),
+                                fontWeight: 900,
                                 color: 'white',
-                                fontWeight: 700,
-                                px: 2,
-                            }}
-                        />
-                        <Typography
-                            variant="h1"
-                            sx={{
-                                color: 'white',
-                                fontWeight: 800,
-                                mb: 3,
-                                textShadow: '0 4px 24px rgba(0,0,0,0.5)',
+                                marginBottom: rem(24),
+                                lineHeight: 1.1,
                             }}
                         >
-                            Transform Your Look with Styler
-                        </Typography>
-                        <Typography
-                            variant="h5"
-                            sx={{
-                                color: 'white',
-                                mb: 4,
-                                fontWeight: 400,
-                                opacity: 0.95,
-                                textShadow: '0 2px 12px rgba(0,0,0,0.5)',
-                            }}
+                            Transform Your Look
+                            <br />
+                            <Text
+                                component="span"
+                                inherit
+                                variant="gradient"
+                                gradient={{ from: '#f59e0b', to: '#d97706', deg: 45 }}
+                            >
+                                With Style
+                            </Text>
+                        </Title>
+
+                        <Text
+                            size="xl"
+                            c="dimmed"
+                            maw={600}
+                            mx="auto"
+                            mb="xl"
                         >
-                            Experience world-class grooming services with our expert stylists
-                        </Typography>
-                        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                            Experience world-class grooming and styling services from our expert team
+                        </Text>
+
+                        <Group justify="center" mt="xl">
                             <Button
                                 component={Link}
                                 to="/services"
-                                variant="contained"
-                                color="secondary"
-                                size="large"
-                                endIcon={<ArrowForward />}
-                                sx={{
-                                    py: 1.5,
-                                    px: 4,
-                                    fontSize: '1.1rem',
-                                    fontWeight: 700,
-                                }}
-                            >
-                                Book Appointment
-                            </Button>
-                            <Button
-                                component={Link}
-                                to="/about"
-                                variant="outlined"
-                                size="large"
-                                sx={{
-                                    py: 1.5,
-                                    px: 4,
-                                    fontSize: '1.1rem',
-                                    fontWeight: 700,
-                                    color: 'white',
-                                    borderColor: 'white',
-                                    '&:hover': {
-                                        borderColor: 'white',
-                                        bgcolor: alpha('#fff', 0.1),
+                                size="lg"
+                                color="amber"
+                                rightSection={<IconArrowRight size={20} />}
+                                styles={{
+                                    root: {
+                                        fontWeight: 700,
                                     },
                                 }}
                             >
-                                Learn More
+                                Explore Services
                             </Button>
-                        </Stack>
+                            {!user && (
+                                <Button
+                                    component={Link}
+                                    to="/login"
+                                    size="lg"
+                                    variant="outline"
+                                    color="gray"
+                                    styles={{
+                                        root: {
+                                            borderColor: 'rgba(255, 255, 255, 0.2)',
+                                            color: 'white',
+                                        },
+                                    }}
+                                >
+                                    Sign Up Now
+                                </Button>
+                            )}
+                        </Group>
                     </MotionBox>
                 </Container>
             </Box>
 
             {/* Stats Section */}
-            <Container sx={{ py: { xs: 6, md: 8 }, mt: { xs: -6, sm: -8, md: -6 }, position: 'relative', zIndex: 2 }}>
-                {statsLoading ? (
-                    // Loading state - 6 skeleton cards
-                    <Grid container spacing={3}>
-                        {[1, 2, 3, 4, 5, 6].map((index) => (
-                            <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
-                                <Paper
-                                    elevation={0}
-                                    sx={{
-                                        p: { xs: 3, sm: 4 },
-                                        height: 200,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        background: alpha('#1e293b', 0.03),
-                                        borderRadius: 3,
-                                    }}
-                                >
-                                    <CircularProgress size={40} />
-                                </Paper>
-                            </Grid>
-                        ))}
-                    </Grid>
-                ) : (
-                    // Stats cards - 6 cards in responsive grid
-                    <Grid container spacing={3}>
-                        {stats.map((stat, index) => (
-                            <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
-                                <StatCard
-                                    iconName={stat.iconName}
-                                    title={stat.title}
-                                    count={stat.count}
-                                    color={stat.color}
-                                    trend={stat.trend}
-                                />
-                            </Grid>
-                        ))}
-                    </Grid>
-                )}
-            </Container>
+            <Box style={{ padding: '4rem 0', backgroundColor: '#f8f9fa' }}>
+                <Container size="xl">
+                    <MotionBox
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                    >
+                        <Title order={2} ta="center" mb={rem(8)} fw={800}>
+                            Our Achievements
+                        </Title>
+                        <Text size="lg" ta="center" c="dimmed" mb="xl" maw={600} mx="auto">
+                            Numbers that speak for our excellence
+                        </Text>
+                    </MotionBox>
+
+                    {statsLoading ? (
+                        <Grid>
+                            {[1, 2, 3, 4, 5, 6].map((index) => (
+                                <Grid.Col key={index} span={{ base: 12, sm: 6, md: 4, lg: 2 }}>
+                                    <Paper
+                                        shadow="sm"
+                                        p="xl"
+                                        radius="lg"
+                                        style={{ minHeight: 200 }}
+                                    >
+                                        <Loader size="md" />
+                                    </Paper>
+                                </Grid.Col>
+                            ))}
+                        </Grid>
+                    ) : (
+                        <Grid>
+                            {stats.map((stat, index) => (
+                                <Grid.Col key={index} span={{ base: 12, sm: 6, md: 4, lg: 2 }}>
+                                    <StatCard
+                                        iconName={stat.iconName}
+                                        title={stat.title}
+                                        count={stat.count}
+                                        trend={stat.trend}
+                                        color={stat.color}
+                                    />
+                                </Grid.Col>
+                            ))}
+                        </Grid>
+                    )}
+                </Container>
+            </Box>
 
             {/* Trending Styles Section */}
-            <Box sx={{ bgcolor: alpha('#1e293b', 0.03), py: { xs: 6, md: 10 } }}>
+            <Box style={{ padding: '4rem 0', backgroundColor: 'rgba(30, 41, 59, 0.03)' }}>
                 <Container>
                     <MotionBox
                         initial={{ opacity: 0, y: 30 }}
@@ -293,160 +278,104 @@ const Home = () => {
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                     >
-                        <Typography variant="h2" align="center" gutterBottom fontWeight={800}>
+                        <Title order={2} ta="center" mb={rem(8)} fw={800}>
                             Trending Styles
-                        </Typography>
-                        <Typography
-                            variant="h6"
-                            align="center"
-                            color="text.secondary"
-                            sx={{ mb: 6, maxWidth: 600, mx: 'auto' }}
-                        >
+                        </Title>
+                        <Text size="lg" ta="center" c="dimmed" mb="xl" maw={600} mx="auto">
                             Discover the latest trends in grooming and styling
-                        </Typography>
+                        </Text>
                     </MotionBox>
 
-                    <Grid container spacing={3}>
+                    <Grid>
                         {trendingStyles.map((image, index) => (
-                            <Grid item xs={12} sm={6} md={3} key={index}>
+                            <Grid.Col key={index} span={{ base: 12, sm: 6, md: 3 }}>
                                 <MotionPaper
                                     initial={{ opacity: 0, y: 30 }}
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.6, delay: index * 0.1 }}
                                     whileHover={{ y: -12 }}
-                                    elevation={0}
-                                    sx={{
-                                        width: '100%',
-                                        borderRadius: 3,
-                                        overflow: 'hidden',
-                                        height: { xs: 320, sm: 380 },
+                                    shadow="sm"
+                                    radius="md"
+                                    style={{
+                                        height: 380,
                                         cursor: 'pointer',
                                         position: 'relative',
-                                        border: `2px solid ${alpha('#1e293b', 0.08)}`,
-                                        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                                        '&:hover': {
-                                            border: `2px solid ${alpha('#f59e0b', 0.4)}`,
-                                            boxShadow: `0 16px 48px ${alpha('#f59e0b', 0.2)}`,
-                                            '& .style-image': {
-                                                transform: 'scale(1.15)',
-                                            },
-                                            '& .style-overlay': {
-                                                background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, transparent 100%)',
-                                            },
-                                            '& .style-badge': {
-                                                transform: 'scale(1.05)',
-                                                bgcolor: alpha('#f59e0b', 0.95),
-                                            }
-                                        },
+                                        overflow: 'hidden',
                                     }}
                                 >
-                                    {/* Image */}
                                     <Box
-                                        className="style-image"
-                                        sx={{
+                                        style={{
                                             height: '100%',
                                             backgroundImage: `url(${image})`,
                                             backgroundSize: 'cover',
                                             backgroundPosition: 'center',
-                                            transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
                                         }}
                                     />
 
-                                    {/* Gradient Overlay */}
                                     <Box
-                                        className="style-overlay"
-                                        sx={{
+                                        style={{
                                             position: 'absolute',
                                             inset: 0,
                                             background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.3) 50%, transparent 100%)',
-                                            transition: 'background 0.4s ease',
                                         }}
                                     />
 
-                                    {/* Category Badge */}
-                                    <Chip
-                                        className="style-badge"
-                                        label={index % 2 === 0 ? 'TRENDING' : 'POPULAR'}
-                                        sx={{
+                                    <Badge
+                                        color="amber"
+                                        variant="filled"
+                                        style={{
                                             position: 'absolute',
                                             top: 16,
                                             right: 16,
-                                            bgcolor: alpha('#f59e0b', 0.9),
-                                            color: 'white',
-                                            fontWeight: 700,
-                                            fontSize: '0.7rem',
-                                            px: 1.5,
-                                            height: 28,
-                                            backdropFilter: 'blur(10px)',
-                                            border: `1px solid ${alpha('#fff', 0.2)}`,
-                                            transition: 'all 0.3s ease',
                                         }}
-                                    />
+                                    >
+                                        {index % 2 === 0 ? 'TRENDING' : 'POPULAR'}
+                                    </Badge>
 
-                                    {/* Content */}
                                     <Box
-                                        sx={{
+                                        style={{
                                             position: 'absolute',
                                             bottom: 0,
                                             left: 0,
                                             right: 0,
-                                            p: 3,
+                                            padding: rem(24),
                                             zIndex: 1,
                                         }}
                                     >
-                                        <Typography
-                                            variant="h6"
-                                            sx={{
-                                                color: 'white',
-                                                fontWeight: 700,
-                                                mb: 0.5,
-                                                textShadow: '0 2px 8px rgba(0,0,0,0.5)',
-                                            }}
-                                        >
+                                        <Title order={6} c="white" fw={700} mb={rem(4)}>
                                             Style {index + 1}
-                                        </Typography>
-                                        <Typography
-                                            variant="body2"
-                                            sx={{
-                                                color: alpha('#fff', 0.9),
-                                                textShadow: '0 1px 4px rgba(0,0,0,0.5)',
-                                            }}
-                                        >
+                                        </Title>
+                                        <Text size="sm" c="white" opacity={0.9}>
                                             Latest grooming trends
-                                        </Typography>
+                                        </Text>
                                     </Box>
                                 </MotionPaper>
-                            </Grid>
+                            </Grid.Col>
                         ))}
                     </Grid>
                 </Container>
             </Box>
 
             {/* Services Section */}
-            <Container maxWidth="lg" sx={{ py: { xs: 6, md: 10 } }}>
+            <Container size="lg" style={{ padding: '4rem 0' }}>
                 <MotionBox
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
                 >
-                    <Typography variant="h2" align="center" gutterBottom fontWeight={800}>
+                    <Title order={2} ta="center" mb={rem(8)} fw={800}>
                         Our Services
-                    </Typography>
-                    <Typography
-                        variant="h6"
-                        align="center"
-                        color="text.secondary"
-                        sx={{ mb: 6, maxWidth: 600, mx: 'auto' }}
-                    >
+                    </Title>
+                    <Text size="lg" ta="center" c="dimmed" mb="xl" maw={600} mx="auto">
                         Premium grooming services tailored to your needs
-                    </Typography>
+                    </Text>
                 </MotionBox>
 
-                <Grid container spacing={4}>
+                <Grid gutter="xl">
                     {services.map((service, index) => (
-                        <Grid item xs={12} sm={6} md={6} key={index}>
+                        <Grid.Col key={index} span={{ base: 12, sm: 6 }}>
                             <MotionBox
                                 initial={{ opacity: 0, y: 30 }}
                                 whileInView={{ opacity: 1, y: 0 }}
@@ -456,377 +385,154 @@ const Home = () => {
                                     y: -12,
                                     transition: { duration: 0.3 }
                                 }}
-                                sx={{ display: 'flex', width: '100%', height: '100%' }}
+                                style={{ height: '100%' }}
                             >
                                 <Card
-                                    sx={{
-                                        height: { xs: 380, sm: 420 },
+                                    shadow="sm"
+                                    padding="lg"
+                                    radius="md"
+                                    style={{
+                                        height: 420,
+                                        cursor: 'pointer',
                                         position: 'relative',
                                         overflow: 'hidden',
-                                        cursor: 'pointer',
-                                        borderRadius: 3,
-                                        border: `2px solid ${alpha('#1e293b', 0.08)}`,
-                                        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                                        '&:hover': {
-                                            border: `2px solid ${alpha('#f59e0b', 0.5)}`,
-                                            boxShadow: `0 20px 60px ${alpha('#1e293b', 0.25)}`,
-                                            '& .service-image': {
-                                                transform: 'scale(1.12)',
-                                            },
-                                            '& .service-overlay': {
-                                                background: 'linear-gradient(to top, rgba(30,41,59,0.95) 0%, rgba(30,41,59,0.7) 60%, rgba(30,41,59,0.2) 100%)',
-                                            },
-                                            '& .service-button': {
-                                                transform: 'translateY(0)',
-                                                opacity: 1,
-                                            }
-                                        },
                                     }}
                                     onClick={() => navigate('/services')}
                                 >
-                                    <CardMedia
-                                        component="img"
-                                        className="service-image"
-                                        height="100%"
-                                        image={service.image}
-                                        alt={service.title}
-                                        sx={{
-                                            transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-                                        }}
-                                    />
-
-                                    {/* Gradient Overlay */}
-                                    <Box
-                                        className="service-overlay"
-                                        sx={{
-                                            position: 'absolute',
-                                            inset: 0,
-                                            background: 'linear-gradient(to top, rgba(30,41,59,0.9) 0%, rgba(30,41,59,0.5) 50%, rgba(30,41,59,0.1) 100%)',
-                                            transition: 'background 0.4s ease',
-                                        }}
-                                    />
-
-                                    {/* Content */}
-                                    <Box
-                                        sx={{
-                                            position: 'absolute',
-                                            bottom: 0,
-                                            left: 0,
-                                            right: 0,
-                                            p: { xs: 3, sm: 4 },
-                                            zIndex: 1,
-                                        }}
-                                    >
-                                        <Chip
-                                            label="PREMIUM"
-                                            sx={{
-                                                mb: 2,
-                                                bgcolor: alpha('#f59e0b', 0.95),
-                                                color: 'white',
-                                                fontWeight: 700,
-                                                fontSize: '0.7rem',
-                                                height: 28,
-                                                backdropFilter: 'blur(10px)',
-                                                border: `1px solid ${alpha('#fff', 0.2)}`,
-                                            }}
+                                    <Card.Section>
+                                        <Image
+                                            src={service.image}
+                                            height={200}
+                                            alt={service.title}
                                         />
-                                        <Typography
-                                            variant="h3"
-                                            sx={{
-                                                color: 'white',
-                                                fontWeight: 800,
-                                                mb: 1.5,
-                                                textShadow: '0 4px 12px rgba(0,0,0,0.5)',
-                                                fontSize: { xs: '1.75rem', sm: '2rem' }
-                                            }}
-                                        >
-                                            {service.title}
-                                        </Typography>
-                                        <Typography
-                                            variant="body1"
-                                            sx={{
-                                                color: 'white',
-                                                opacity: 0.95,
-                                                mb: 2.5,
-                                                textShadow: '0 2px 8px rgba(0,0,0,0.5)',
-                                                fontSize: { xs: '0.95rem', sm: '1rem' }
-                                            }}
-                                        >
-                                            {service.description}
-                                        </Typography>
-                                        <Button
-                                            className="service-button"
-                                            variant="contained"
-                                            color="secondary"
-                                            endIcon={<ArrowForward />}
-                                            sx={{
-                                                transform: 'translateY(8px)',
-                                                opacity: 0,
-                                                transition: 'all 0.3s ease',
-                                                fontWeight: 700,
-                                            }}
-                                        >
-                                            Explore Services
-                                        </Button>
-                                    </Box>
+                                    </Card.Section>
+
+                                    <Badge color="amber" variant="filled" mt="md">
+                                        PREMIUM
+                                    </Badge>
+
+                                    <Title order={3} mt="md" fw={800}>
+                                        {service.title}
+                                    </Title>
+
+                                    <Text size="sm" c="dimmed" mt="sm">
+                                        {service.description}
+                                    </Text>
+
+                                    <Button
+                                        color="amber"
+                                        fullWidth
+                                        mt="md"
+                                        radius="md"
+                                        rightSection={<IconArrowRight size={16} />}
+                                    >
+                                        Learn More
+                                    </Button>
                                 </Card>
                             </MotionBox>
-                        </Grid>
+                        </Grid.Col>
                     ))}
                 </Grid>
             </Container>
 
-            {/* About Section */}
-            <Box sx={{ bgcolor: 'primary.main', color: 'white', py: { xs: 6, md: 10 } }}>
+            {/* CTA Section */}
+            <Box style={{ backgroundColor: '#f59e0b', padding: '4rem 0', color: 'white' }}>
                 <Container>
-                    <Grid container spacing={6} alignItems="center">
-                        <Grid item xs={12} md={6}>
+                    <Grid align="center">
+                        <Grid.Col span={{ base: 12, md: 6 }}>
                             <MotionBox
                                 initial={{ opacity: 0, x: -30 }}
                                 whileInView={{ opacity: 1, x: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.6 }}
                             >
-                                <Typography variant="h2" gutterBottom fontWeight={800} sx={{ color: 'white' }}>
-                                    Explore the Realm of Beauty
-                                </Typography>
-                                <Typography variant="body1" sx={{ mb: 3, color: 'white', opacity: 0.9, fontSize: '1.1rem', lineHeight: 1.8 }}>
-                                    With over 162 branches nationally and internationally, Styler salon is a premium beauty salon
-                                    for men and women who desire to look the best every day. Getting a makeover not only changes
-                                    the appearance of a person but also brings back the lost confidence.
-                                </Typography>
-                                <Typography variant="body1" sx={{ mb: 4, color: 'white', opacity: 0.9, fontSize: '1.1rem', lineHeight: 1.8 }}>
-                                    With over 6000 employees engaged in transforming your look, we make sure that all the services
-                                    provided at our salons meet the international standards.
-                                </Typography>
-                                <Button
-                                    component={Link}
-                                    to="/about"
-                                    variant="contained"
-                                    color="secondary"
-                                    size="large"
-                                    endIcon={<ArrowForward />}
-                                    sx={{ py: 1.5, px: 4, fontWeight: 700 }}
-                                >
-                                    Learn More About Us
-                                </Button>
+                                <Title order={2} c="white" fw={800} mb="md">
+                                    Ready to Transform Your Look?
+                                </Title>
+                                <Text size="lg" c="white" mb="xl">
+                                    Book your appointment now and experience the difference
+                                </Text>
+                                <Group>
+                                    <Button
+                                        component={Link}
+                                        to="/services"
+                                        size="lg"
+                                        variant="white"
+                                        color="dark"
+                                        rightSection={<IconArrowRight size={20} />}
+                                    >
+                                        Book Now
+                                    </Button>
+                                    <Button
+                                        component="a"
+                                        href="tel:+919999999999"
+                                        size="lg"
+                                        variant="outline"
+                                        style={{
+                                            borderColor: 'white',
+                                            color: 'white',
+                                        }}
+                                        leftSection={<IconPhone size={20} />}
+                                    >
+                                        Call Us
+                                    </Button>
+                                </Group>
                             </MotionBox>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
+                        </Grid.Col>
+                        <Grid.Col span={{ base: 12, md: 6 }}>
                             <MotionBox
                                 initial={{ opacity: 0, x: 30 }}
                                 whileInView={{ opacity: 1, x: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.6 }}
                             >
-                                <Box
-                                    component="img"
-                                    src="https://www.lookssalon.in/public/images/innerBanner/service-men-1.jpg"
-                                    alt="Styler Salon"
-                                    sx={{
-                                        width: '100%',
-                                        borderRadius: 4,
-                                        boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-                                    }}
+                                <Image
+                                    src="https://d3r0z4awu7ba6n.cloudfront.net/images/cta/booking.jpg"
+                                    radius="md"
+                                    alt="Book appointment"
                                 />
                             </MotionBox>
-                        </Grid>
+                        </Grid.Col>
                     </Grid>
                 </Container>
             </Box>
 
-            {/* Partner Brands Section */}
-            <Container sx={{ py: { xs: 6, md: 10 } }}>
-                <MotionBox
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                >
-                    <Typography variant="h2" align="center" gutterBottom fontWeight={800}>
-                        Our Partner Brands
-                    </Typography>
-                    <Typography
-                        variant="h6"
-                        align="center"
-                        color="text.secondary"
-                        sx={{ mb: 6, maxWidth: 600, mx: 'auto' }}
-                    >
-                        We use only premium international brands
-                    </Typography>
-                </MotionBox>
+            {/* Partners Section */}
+            <Box style={{ padding: '4rem 0' }}>
+                <Container>
+                    <Title order={3} ta="center" mb="xl" c="dimmed" fw={700}>
+                        Trusted by leading brands
+                    </Title>
 
-                <Grid container spacing={{ xs: 2, sm: 3 }} justifyContent="center">
-                    {partners.map((partner, index) => (
-                        <Grid item xs={6} sm={4} md={3} key={index}>
-                            <MotionPaper
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.4, delay: index * 0.05 }}
-                                whileHover={{
-                                    y: -6,
-                                    scale: 1.03,
-                                    transition: { duration: 0.3 }
-                                }}
-                                elevation={0}
-                                sx={{
-                                    p: { xs: 2.5, sm: 3 },
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    height: { xs: 100, sm: 130 },
-                                    borderRadius: 3,
-                                    position: 'relative',
-                                    overflow: 'hidden',
-                                    border: `2px solid ${alpha('#1e293b', 0.06)}`,
-                                    background: `linear-gradient(135deg, ${alpha('#1e293b', 0.02)} 0%, ${alpha('#1e293b', 0.06)} 100%)`,
-                                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                    '&:hover': {
-                                        border: `2px solid ${alpha('#f59e0b', 0.3)}`,
-                                        background: `linear-gradient(135deg, ${alpha('#f59e0b', 0.05)} 0%, ${alpha('#f59e0b', 0.02)} 100%)`,
-                                        boxShadow: `0 8px 32px ${alpha('#f59e0b', 0.15)}`,
-                                        '& .brand-logo': {
-                                            filter: 'grayscale(0%) brightness(1.05)',
-                                            transform: 'scale(1.05)',
-                                        },
-                                        '& .brand-bg': {
-                                            opacity: 0.12,
-                                        }
-                                    },
-                                }}
-                            >
-                                {/* Background Pattern */}
-                                <Box
-                                    className="brand-bg"
-                                    sx={{
-                                        position: 'absolute',
-                                        inset: 0,
-                                        opacity: 0.06,
-                                        background: `radial-gradient(circle at 50% 50%, ${alpha('#f59e0b', 0.3)} 0%, transparent 70%)`,
-                                        transition: 'opacity 0.3s ease',
-                                    }}
-                                />
-                                <Box
-                                    component="img"
-                                    className="brand-logo"
-                                    src={partner}
-                                    alt="Partner Brand"
-                                    sx={{
-                                        maxWidth: '85%',
-                                        maxHeight: '70%',
-                                        objectFit: 'contain',
-                                        filter: 'grayscale(100%) brightness(0.9)',
-                                        transition: 'all 0.3s ease',
-                                        zIndex: 1,
-                                    }}
-                                />
-                            </MotionPaper>
-                        </Grid>
-                    ))}
-                </Grid>
-            </Container>
-
-            {/* CTA Section */}
-            {
-                !isAuthenticated() && (
-                    <Box
-                        sx={{
-                            position: 'relative',
-                            overflow: 'hidden',
-                            py: { xs: 8, md: 10 },
-                            textAlign: 'center',
-                            background: `linear-gradient(135deg, ${alpha('#f59e0b', 0.15)} 0%, ${alpha('#14b8a6', 0.1)} 50%, ${alpha('#1e293b', 0.08)} 100%)`,
-                            '&::before': {
-                                content: '""',
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                                background: `radial-gradient(circle at 30% 50%, ${alpha('#f59e0b', 0.15)} 0%, transparent 50%), radial-gradient(circle at 70% 50%, ${alpha('#14b8a6', 0.15)} 0%, transparent 50%)`,
-                                opacity: 0.6,
-                            }
-                        }}
-                    >
-                        <Container sx={{ position: 'relative', zIndex: 1 }}>
-                            <MotionBox
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.6 }}
-                            >
-                                <Typography
-                                    variant="h3"
-                                    gutterBottom
-                                    fontWeight={800}
-                                    sx={{
-                                        fontSize: { xs: '1.75rem', sm: '2.25rem', md: '3rem' }
+                    <Grid justify="center">
+                        {partners.map((partner, index) => (
+                            <Grid.Col key={index} span={{ base: 6, sm: 4, md: 3 }}>
+                                <MotionPaper
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                                    whileHover={{ scale: 1.05 }}
+                                    shadow="xs"
+                                    p="xl"
+                                    radius="md"
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        minHeight: 100,
                                     }}
                                 >
-                                    Ready to Transform Your Look?
-                                </Typography>
-                                <Typography
-                                    variant="h6"
-                                    color="text.secondary"
-                                    sx={{
-                                        mb: 5,
-                                        maxWidth: 600,
-                                        mx: 'auto',
-                                        fontSize: { xs: '1rem', sm: '1.15rem' }
-                                    }}
-                                >
-                                    Join thousands of satisfied customers and book your appointment today
-                                </Typography>
-                                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
-                                    <Button
-                                        component={Link}
-                                        to="/services"
-                                        variant="contained"
-                                        color="primary"
-                                        size="large"
-                                        endIcon={<ArrowForward />}
-                                        sx={{
-                                            py: 1.8,
-                                            px: 5,
-                                            fontWeight: 700,
-                                            fontSize: '1.05rem',
-                                            boxShadow: `0 8px 24px ${alpha('#1e293b', 0.25)}`,
-                                            '&:hover': {
-                                                transform: 'translateY(-2px)',
-                                                boxShadow: `0 12px 32px ${alpha('#1e293b', 0.35)}`,
-                                            }
-                                        }}
-                                    >
-                                        Book Now
-                                    </Button>
-                                    <Button
-                                        component={Link}
-                                        to="/admin/login"
-                                        variant="outlined"
-                                        color="primary"
-                                        size="large"
-                                        sx={{
-                                            py: 1.8,
-                                            px: 5,
-                                            fontWeight: 700,
-                                            fontSize: '1.05rem',
-                                            borderWidth: 2,
-                                            '&:hover': {
-                                                borderWidth: 2,
-                                                transform: 'translateY(-2px)',
-                                            }
-                                        }}
-                                    >
-                                        Admin Login
-                                    </Button>
-                                </Stack>
-                            </MotionBox>
-                        </Container>
-                    </Box>
-                )
-            }
-        </Box >
+                                    <Text size="lg" fw={700} c="dimmed">
+                                        {partner.name}
+                                    </Text>
+                                </MotionPaper>
+                            </Grid.Col>
+                        ))}
+                    </Grid>
+                </Container>
+            </Box>
+        </Box>
     );
 };
 
