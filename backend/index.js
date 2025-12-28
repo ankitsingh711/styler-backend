@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const { UserRouter } = require("./routes/UserRouter");
 const { AdminRouter } = require("./routes/AdminRouter");
+const { StatsRouter } = require("./routes/StatsRouter");
 const { connection } = require("./config/db");
 require("dotenv").config();
 
@@ -30,6 +31,7 @@ app.get("/", (req, res) => {
 
 app.use("/user", UserRouter);
 app.use("/admin", AdminRouter);
+app.use("/stats", StatsRouter);
 
 // 404 Handler
 app.use((req, res) => {
