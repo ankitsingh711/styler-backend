@@ -5,6 +5,7 @@ import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import Loader from './components/common/Loader';
 import ToastContainer from './components/common/ToastContainer';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Pages
 import Home from './pages/Home';
@@ -12,30 +13,13 @@ import About from './pages/About';
 import Login from './pages/Login';
 import Services from './pages/Services';
 import Profile from './pages/Profile';
+import Unauthorized from './pages/Unauthorized';
 
 // Admin Pages
 import AdminLogin from './pages/admin/AdminLogin';
 import Dashboard from './pages/admin/Dashboard';
 import { Users, Stylers, Services as AdminServices, Appointments } from './pages/admin/AdminPages';
 
-// Protected Route Component
-const ProtectedRoute = ({ children, adminOnly = false }) => {
-  const { isAuthenticated, isAdmin, loading } = useAuth();
-
-  if (loading) {
-    return <Loader />;
-  }
-
-  if (!isAuthenticated()) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (adminOnly && !isAdmin()) {
-    return <Navigate to="/" replace />;
-  }
-
-  return children;
-};
 
 // Layout Component
 const Layout = ({ children, showFooter = true, showNavbar = true }) => {
@@ -77,53 +61,56 @@ function AppContent() {
         <Route
           path="/admin/dashboard"
           element={
-            <Layout showFooter={false}>
-              <ProtectedRoute adminOnly>
+            <ProtectedRoute role={["superadmin", "salon_owner"]} redirectTo="/admin/login">
+              <Layout showFooter={false}>
                 <Dashboard />
-              </ProtectedRoute>
-            </Layout>
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/users"
           element={
-            <Layout showFooter={false}>
-              <ProtectedRoute adminOnly>
+            <ProtectedRoute role="superadmin" redirectTo="/admin/login">
+              <Layout showFooter={false}>
                 <Users />
-              </ProtectedRoute>
-            </Layout>
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/stylers"
           element={
-            <Layout showFooter={false}>
-              <ProtectedRoute adminOnly>
+            <ProtectedRoute role={["superadmin", "salon_owner"]} redirectTo="/admin/login">
+              <Layout showFooter={false}>
                 <Stylers />
-              </ProtectedRoute>
-            </Layout>
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/services"
           element={
-            <Layout showFooter={false}>
-              <ProtectedRoute adminOnly>
+            <ProtectedRoute role={["superadmin", "salon_owner"]} redirectTo="/admin/login">
+              <Layout showFooter={false}>
                 <AdminServices />
-              </ProtectedRoute>
-            </Layout>
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/appointments"
           element={
-            <Layout showFooter={false}>
-              <ProtectedRoute adminOnly>
+            <ProtectedRoute role={["superadmin", "salon_owner", "receptionist"]} redirectTo="/admin/login">
+              <Layout showFooter={false}>
                 <Appointments />
-              </ProtectedRoute>
-            </Layout>
+              </Layout>
+            </ProtectedRoute>
           }
         />
+
+        {/* Unauthorized Access */}
+        <Route path="/unauthorized" element={<Unauthorized />} />
 
         {/* Catch all - redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />

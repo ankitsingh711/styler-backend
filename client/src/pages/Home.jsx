@@ -317,6 +317,7 @@ const Home = () => {
                                     whileHover={{ y: -12 }}
                                     elevation={0}
                                     sx={{
+                                        width: '100%',
                                         borderRadius: 3,
                                         overflow: 'hidden',
                                         height: { xs: 320, sm: 380 },

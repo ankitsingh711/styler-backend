@@ -5,10 +5,26 @@ const UserSchema = mongoose.Schema(
     email: String,
     name: String,
     mob_no: Number,
-    gender:String,
-    city:String,
+    gender: String,
+    city: String,
     password: String,
-    role: String
+    role: {
+      type: String,
+      enum: ["superadmin", "salon_owner", "stylist", "customer", "receptionist", "support"],
+      default: "customer"
+    },
+    // Custom permissions (in addition to role-based permissions)
+    customPermissions: [{
+      type: String,
+    }],
+    isActive: {
+      type: Boolean,
+      default: true
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
   }
 );
 
