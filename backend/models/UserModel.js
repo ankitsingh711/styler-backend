@@ -8,9 +8,13 @@ const UserSchema = mongoose.Schema(
     gender: String,
     city: String,
     password: String,
+    profilePicture: {
+      type: String,
+      default: null
+    },
     role: {
       type: String,
-      enum: ["superadmin", "salon_owner", "stylist", "customer", "receptionist", "support"],
+      enum: ["superadmin", "salon_owner", "stylist", "customer", "receptionist", "support", "user"],
       default: "customer"
     },
     // Custom permissions (in addition to role-based permissions)

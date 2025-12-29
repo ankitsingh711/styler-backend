@@ -13,19 +13,21 @@ export const AuthProvider = ({ children }) => {
         const email = localStorage.getItem(STORAGE_KEYS.EMAIL);
         const userType = localStorage.getItem(STORAGE_KEYS.USER_TYPE);
         const userName = localStorage.getItem(STORAGE_KEYS.USER_NAME);
+        const profilePicture = localStorage.getItem('profilePicture');
 
         if (token && email) {
             setUser({
                 email,
                 userType: userType || USER_TYPES.USER,
                 userName: userName || email,
+                profilePicture: profilePicture || null,
             });
         }
         setLoading(false);
     }, []);
 
     const login = (userData) => {
-        const { token, refreshToken, email, userType = USER_TYPES.USER, name, username } = userData;
+        const { token, refreshToken, email, userType = USER_TYPES.USER, name, username, profilePicture } = userData;
 
         // Store all authentication data
         if (token) {
@@ -38,17 +40,33 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem(STORAGE_KEYS.EMAIL, email);
         }
         localStorage.setItem(STORAGE_KEYS.USER_TYPE, userType);
-        
+
         const displayName = name || username || email;
         if (displayName) {
             localStorage.setItem(STORAGE_KEYS.USER_NAME, displayName);
+        }
+
+        if (profilePicture) {
+            localStorage.setItem('profilePicture', profilePicture);
         }
 
         setUser({
             email,
             userType,
             userName: displayName,
+            profilePicture: profilePicture || null,
         });
+    };
+
+    const updateProfile = (updates) => {
+        if (updates.profilePicture) {
+            localStorage.setItem('profilePicture', updates.profilePicture);
+        }
+
+        setUser(prev => ({
+            ...prev,
+            ...updates
+        }));
     };
 
     const logout = () => {
@@ -57,6 +75,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem(STORAGE_KEYS.EMAIL);
         localStorage.removeItem(STORAGE_KEYS.USER_TYPE);
         localStorage.removeItem(STORAGE_KEYS.USER_NAME);
+        localStorage.removeItem('profilePicture');
         setUser(null);
     };
 
@@ -77,6 +96,7 @@ export const AuthProvider = ({ children }) => {
                 logout,
                 isAdmin,
                 isAuthenticated,
+                updateProfile,
             }}
         >
             {children}

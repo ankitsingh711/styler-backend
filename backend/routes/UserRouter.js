@@ -12,6 +12,25 @@ const { AppointmentModel } = require("../models/AppointmentModel");
 const { BlockUserModel } = require("../models/BlockUserModel");
 const otpvalidator = require("../config/OTP");
 const { generateTokenPair, verifyRefreshToken } = require("../utils/jwtHelper");
+const multer = require('multer');
+const { uploadToS3, deleteFromS3 } = require('../config/s3');
+
+// Configure multer for memory storage
+const storage = multer.memoryStorage();
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB limit
+    },
+    fileFilter: (req, file, cb) => {
+        // Accept only image files
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only image files are allowed!'), false);
+        }
+    }
+});
 
 
 const app = express()
@@ -37,7 +56,7 @@ UserRouter.post("/register", async (req, res) => {
                 res.send({ message: err.message });
             } else {
                 payload.password = hash;
-                payload.role = `user`
+                payload.role = `customer`
                 const User = new UserModel(payload);
                 await User.save();
                 res.send({ "message": `User Register Sucessfull` });
@@ -115,6 +134,7 @@ UserRouter.post("/login", async (req, res) => {
             refreshToken: refreshToken,
             username: User.name,
             email: User.email,
+            profilePicture: User.profilePicture,
             userType: User.role || 'user'
         });
 
@@ -359,13 +379,113 @@ UserRouter.get("/appointments", async (req, res) => {
     }
 });
 
+// **************UPLOAD PROFILE PICTURE*****************
+UserRouter.post("/upload-profile-picture", upload.single('profileImage'), async (req, res) => {
+    try {
+        // Authenticate middleware sets req.user
+        const userId = req.user?.userID || req.userID;
+
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: "User ID not found in request"
+            });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: "No file uploaded"
+            });
+        }
+
+        // Get user to check for existing profile picture
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        // Delete old profile picture from S3 if exists
+        if (user.profilePicture) {
+            try {
+                await deleteFromS3(user.profilePicture);
+            } catch (error) {
+                console.error("Error deleting old profile picture:", error);
+                // Continue even if deletion fails
+            }
+        }
+
+        // Upload new picture to S3
+        const fileUrl = await uploadToS3(
+            req.file.buffer,
+            req.file.originalname,
+            req.file.mimetype
+        );
+
+        // Update user's profile picture in database
+        user.profilePicture = fileUrl;
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Profile picture uploaded successfully",
+            data: {
+                profilePicture: fileUrl
+            }
+        });
+
+    } catch (error) {
+        console.error("Error uploading profile picture:", error.message);
+        res.status(500).json({
+            success: false,
+            message: "Failed to upload profile picture",
+            error: error.message
+        });
+    }
+});
+
+// Get current user profile
+UserRouter.get("/profile", async (req, res) => {
+    try {
+        const userId = req.user?.userID || req.userID;
+        const user = await UserModel.findById(userId).select('-password');
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: {
+                userName: user.name,
+                email: user.email,
+                profilePicture: user.profilePicture,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        console.error("Error fetching profile:", error.message);
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch profile",
+            error: error.message
+        });
+    }
+});
+
 
 // **************LOGOUT*****************
 UserRouter.get("/logout", (req, res) => {
     const token = req.headers.authorization
     const blacklist = JSON.parse(fs.readFileSync("./blacklisted.json", { encoding: "utf-8" }));
     blacklist.push(token);
-    fs.writeFileSync("./blacklist.json", JSON.stringify(blacklist));
+    fs.writeFileSync(". /blacklist.json", JSON.stringify(blacklist));
     res.send("you are logged out")
 })
 // ***********Appointments*************
