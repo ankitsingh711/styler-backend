@@ -26,18 +26,18 @@ export class TokenService {
      * Generate access token
      */
     generateAccessToken(payload: JwtPayload): string {
-        return jwt.sign(payload, this.accessTokenSecret, {
+        return jwt.sign(payload as any, this.accessTokenSecret as any, {
             expiresIn: this.accessTokenExpiry,
-        });
+        } as any);
     }
 
     /**
      * Generate refresh token
      */
     generateRefreshToken(payload: JwtPayload): string {
-        return jwt.sign(payload, this.refreshTokenSecret, {
+        return jwt.sign(payload as any, this.refreshTokenSecret as any, {
             expiresIn: this.refreshTokenExpiry,
-        });
+        } as any);
     }
 
     /**

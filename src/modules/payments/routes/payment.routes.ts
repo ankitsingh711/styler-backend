@@ -1,10 +1,8 @@
 import { Router } from 'express';
 import { paymentController } from '../controllers/payment.controller';
 import { authGuard } from '@shared/guards/auth.guard';
-import { rolesGuard } from '@shared/guards/roles.guard';
-import { UserRole } from '@common/constants';
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * @route   POST /api/v1/payments/webhook
@@ -56,4 +54,4 @@ router.get('/salon/:salonId/statistics', authGuard, (req, res, next) =>
     paymentController.getSalonStatistics(req, res, next)
 );
 
-export const paymentRoutes = router;
+export const paymentRoutes: Router = router;

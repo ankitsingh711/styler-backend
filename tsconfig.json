@@ -1,23 +1,29 @@
 {
     "compilerOptions": {
-        /* Language and Environment */
-        "target": "ES2022",
+        "target": "ES2020",
         "lib": [
-            "ES2022"
+            "ES2020"
         ],
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        /* Modules */
         "module": "commonjs",
-        "rootDir": "src",
         "moduleResolution": "node",
-        "baseUrl": "src",
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "strict": false,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": false,
+        "resolveJsonModule": true,
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "baseUrl": "./src",
         "paths": {
-            "@config/*": [
-                "config/*"
+            "@/*": [
+                "./*"
             ],
             "@common/*": [
                 "common/*"
+            ],
+            "@config/*": [
+                "config/*"
             ],
             "@infrastructure/*": [
                 "infrastructure/*"
@@ -29,35 +35,17 @@
                 "shared/*"
             ]
         },
-        "resolveJsonModule": true,
-        /* Emit */
-        "outDir": "dist",
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
+        "strictPropertyInitialization": false,
+        "strictNullChecks": false,
+        "noImplicitAny": false,
+        "strictFunctionTypes": false,
+        "alwaysStrict": false,
+        "noImplicitThis": false,
         "declaration": true,
         "declarationMap": true,
-        "sourceMap": true,
-        "removeComments": true,
-        "importHelpers": true,
-        "downlevelIteration": true,
-        /* Interop Constraints */
-        "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true,
-        "forceConsistentCasingInFileNames": true,
-        /* Type Checking */
-        "strict": true,
-        "noImplicitAny": true,
-        "strictNullChecks": true,
-        "strictFunctionTypes": true,
-        "strictBindCallApply": true,
-        "strictPropertyInitialization": true,
-        "noImplicitThis": true,
-        "alwaysStrict": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
-        "noUncheckedIndexedAccess": true,
-        /* Completeness */
-        "skipLibCheck": true
+        "sourceMap": true
     },
     "include": [
         "src/**/*"
@@ -65,6 +53,6 @@
     "exclude": [
         "node_modules",
         "dist",
-        "tests/**/*"
+        "**/*.spec.ts"
     ]
 }

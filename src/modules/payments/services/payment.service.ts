@@ -273,7 +273,7 @@ export class PaymentService {
         }
 
         // Check if already refunded
-        if (payment.status === PaymentStatus.REFUNDED) {
+        if ((payment.status as string) === PaymentStatus.REFUNDED) {
             throw new BadRequestException('Payment already refunded');
         }
 

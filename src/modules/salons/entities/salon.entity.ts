@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { GeoPoint, DayOperatingHours } from '@common/interfaces';
+import { GeoPoint } from '@common/interfaces';
 import { ServiceGender, DayOfWeek } from '@common/constants';
 
 /**

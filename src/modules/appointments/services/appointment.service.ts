@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { appointmentRepository } from '../repositories/appointment.repository';
 import { salonRepository } from '@modules/salons/repositories/salon.repository';
 import { userRepository } from '@modules/users/repositories/user.repository';
@@ -124,9 +125,9 @@ export class AppointmentService {
 
         // Create appointment
         const appointment = await appointmentRepository.create({
-            userId,
-            salonId: dto.salonId,
-            barberId: dto.barberId,
+            userId: new mongoose.Types.ObjectId(userId),
+            salonId: new mongoose.Types.ObjectId(dto.salonId),
+            barberId: dto.barberId ? new mongoose.Types.ObjectId(dto.barberId) : undefined,
             serviceIds: dto.serviceIds,
             scheduledAt,
             duration: totalDuration,

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { barberController } from '../controllers/barber.controller';
 import { authGuard } from '@shared/guards/auth.guard';
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * @route   POST /api/v1/barbers
@@ -77,4 +77,4 @@ router.post('/:id/reject', authGuard, (req, res, next) =>
     barberController.rejectBarber(req, res, next)
 );
 
-export const barberRoutes = router;
+export const barberRoutes: Router = router;

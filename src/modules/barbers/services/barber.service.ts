@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { barberRepository } from '../repositories/barber.repository';
 import { salonRepository } from '@modules/salons/repositories/salon.repository';
 import { userRepository } from '@modules/users/repositories/user.repository';
@@ -58,8 +59,8 @@ export class BarberService {
 
         // Create barber profile
         const barber = await barberRepository.create({
-            userId,
-            salonId: dto.salonId,
+            userId: new mongoose.Types.ObjectId(userId),
+            salonId: new mongoose.Types.ObjectId(dto.salonId),
             displayName: dto.displayName,
             bio: dto.bio,
             specializations: dto.specializations,

@@ -1,15 +1,16 @@
+import mongoose from 'mongoose';
 import { salonRepository, SalonSearchFilters, NearbySalonFilters } from '../repositories/salon.repository';
 import { userRepository } from '@modules/users/repositories/user.repository';
 import { s3Service } from '@infrastructure/storage/s3.service';
 import { logger } from '@infrastructure/logger/logger.service';
 import {
-    BadRequestException,
+
     NotFoundException,
     ForbiddenException,
-    ConflictException,
+
 } from '@common/exceptions';
 import { ISalon, ISalonService, IOperatingHours } from '../entities/salon.entity';
-import { FileUpload, PaginationMeta, UploadedFile } from '@common/interfaces';
+import { FileUpload, PaginationMeta } from '@common/interfaces';
 import { UserRole } from '@common/constants';
 
 /**
@@ -68,7 +69,7 @@ export class SalonService {
 
         // Create salon
         const salon = await salonRepository.create({
-            ownerId,
+            ownerId: new mongoose.Types.ObjectId(ownerId),
             businessName: dto.businessName,
             displayName: dto.displayName,
             description: dto.description,

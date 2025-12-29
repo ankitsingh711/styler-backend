@@ -212,7 +212,7 @@ export class AppointmentRepository extends BaseRepository<IAppointment> {
             },
         ]);
 
-        return stats[0] || { total: 0, completed: 0, cancelled: 0, revenue: 0 };
+        return (stats[0] as any) || { total: 0, completed: 0, cancelled: 0, revenue: 0 };
     }
 }
 

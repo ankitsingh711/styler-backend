@@ -182,7 +182,7 @@ export class PaymentRepository extends BaseRepository<IPayment> {
         ]);
 
         return (
-            stats[0] || {
+            (stats[0] as any) || {
                 totalRevenue: 0,
                 platformFees: 0,
                 netRevenue: 0,

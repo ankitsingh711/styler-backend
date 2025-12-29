@@ -48,4 +48,4 @@ router.post('/change-password', authGuard, (req, res, next) =>
  */
 router.get('/me', authGuard, (req, res, next) => authController.getCurrentUser(req, res, next));
 
-export const authRoutes = router;
+export const authRoutes: Router = router;

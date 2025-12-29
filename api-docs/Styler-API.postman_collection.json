@@ -1,0 +1,1103 @@
+{
+    "info": {
+        "name": "Styler Backend API - Complete Collection",
+        "_postman_id": "styler-api-collection",
+        "description": "Complete Postman collection for Styler Backend API with all 52+ endpoints. Includes authentication, salons, appointments, payments, reviews, and barbers modules.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{access_token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:9168/api/v1",
+            "type": "string"
+        },
+        {
+            "key": "access_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "refresh_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "user_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "salon_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "appointment_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "barber_id",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "🔐 Authentication",
+            "item": [
+                {
+                    "name": "Register User",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    const response = pm.response.json();",
+                                    "    if (response.data && response.data.accessToken) {",
+                                    "        pm.collectionVariables.set('access_token', response.data.accessToken);",
+                                    "        pm.collectionVariables.set('refresh_token', response.data.refreshToken);",
+                                    "        pm.collectionVariables.set('user_id', response.data.user.id);",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"customer@example.com\",\n  \"phone\": \"9876543210\",\n  \"password\": \"password123\",\n  \"name\": \"John Doe\",\n  \"gender\": \"male\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/register",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "register"
+                            ]
+                        },
+                        "description": "Register a new user account"
+                    }
+                },
+                {
+                    "name": "Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.collectionVariables.set('access_token', response.data.accessToken);",
+                                    "    pm.collectionVariables.set('refresh_token', response.data.refreshToken);",
+                                    "    pm.collectionVariables.set('user_id', response.data.user.id);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"customer@example.com\",\n  \"password\": \"password123\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get My Profile",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/auth/me",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "me"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/auth/logout",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "logout"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Refresh Token",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/refresh-token",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "refresh-token"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Change Password",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"currentPassword\": \"password123\",\n  \"newPassword\": \"newpassword123\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/change-password",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "change-password"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🏪 Salons",
+            "item": [
+                {
+                    "name": "Register Salon",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.collectionVariables.set('salon_id', response.data._id || response.data.id);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"businessName\": \"Elite Hair Studio\",\n  \"displayName\": \"Elite Studio\",\n  \"description\": \"Premium hair salon with experienced stylists\",\n  \"phone\": \"9876543211\",\n  \"email\": \"elite@example.com\",\n  \"address\": {\n    \"street\": \"123 Main Street\",\n    \"city\": \"Delhi\",\n    \"state\": \"Delhi\",\n    \"pincode\": \"110001\",\n    \"location\": {\n      \"type\": \"Point\",\n      \"coordinates\": [77.2090, 28.6139]\n    }\n  }\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/salons",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "salons"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Search Nearby Salons (Geospatial)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/salons/nearby?latitude=28.6139&longitude=77.2090&radius=10&page=1&limit=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "salons",
+                                "nearby"
+                            ],
+                            "query": [
+                                {
+                                    "key": "latitude",
+                                    "value": "28.6139"
+                                },
+                                {
+                                    "key": "longitude",
+                                    "value": "77.2090"
+                                },
+                                {
+                                    "key": "radius",
+                                    "value": "10"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Search Salons with Filters",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/salons/search?city=Delhi&minRating=4&page=1&limit=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "salons",
+                                "search"
+                            ],
+                            "query": [
+                                {
+                                    "key": "city",
+                                    "value": "Delhi"
+                                },
+                                {
+                                    "key": "minRating",
+                                    "value": "4"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Salon by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/salons/{{salon_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "salons",
+                                "{{salon_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get My Salons",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/salons/my",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "salons",
+                                "my"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Salon",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"displayName\": \"Elite Hair Studio - Premium\",\n  \"description\": \"Updated description\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/salons/{{salon_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "salons",
+                                "{{salon_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Service to Salon",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Haircut\",\n  \"description\": \"Professional haircut\",\n  \"category\": \"haircut\",\n  \"price\": 500,\n  \"duration\": 30,\n  \"gender\": \"male\",\n  \"isActive\": true\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/salons/{{salon_id}}/services",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "salons",
+                                "{{salon_id}}",
+                                "services"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Salon Services",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/salons/{{salon_id}}/services",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "salons",
+                                "{{salon_id}}",
+                                "services"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Operating Hours",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"operatingHours\": [\n    {\n      \"day\": \"monday\",\n      \"isOpen\": true,\n      \"slots\": [\n        {\"start\": \"09:00\", \"end\": \"18:00\"}\n      ]\n    },\n    {\n      \"day\": \"sunday\",\n      \"isOpen\": false,\n      \"slots\": []\n    }\n  ]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/salons/{{salon_id}}/operating-hours",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "salons",
+                                "{{salon_id}}",
+                                "operating-hours"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "📅 Appointments",
+            "item": [
+                {
+                    "name": "Check Slot Availability",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"salonId\": \"{{salon_id}}\",\n  \"scheduledAt\": \"2024-02-15T14:00:00.000Z\",\n  \"duration\": 60\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/appointments/check-availability",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "appointments",
+                                "check-availability"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Book Appointment",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.collectionVariables.set('appointment_id', response.data._id || response.data.id);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"salonId\": \"{{salon_id}}\",\n  \"serviceIds\": [],\n  \"scheduledAt\": \"2024-02-15T14:00:00.000Z\",\n  \"location\": {\n    \"type\": \"salon\"\n  },\n  \"notes\": \"Please call before arrival\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/appointments",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "appointments"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get My Appointments",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/appointments?page=1&limit=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "appointments"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Upcoming Appointments",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/appointments/upcoming",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "appointments",
+                                "upcoming"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Appointment by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/appointments/{{appointment_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "appointments",
+                                "{{appointment_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Appointment Status",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": \"confirmed\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/appointments/{{appointment_id}}/status",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "appointments",
+                                "{{appointment_id}}",
+                                "status"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Cancel Appointment",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"reason\": \"Personal emergency\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/appointments/{{appointment_id}}/cancel",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "appointments",
+                                "{{appointment_id}}",
+                                "cancel"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Salon Appointments",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/appointments/salon/{{salon_id}}?page=1&limit=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "appointments",
+                                "salon",
+                                "{{salon_id}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Salon Statistics",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/appointments/salon/{{salon_id}}/statistics",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "appointments",
+                                "salon",
+                                "{{salon_id}}",
+                                "statistics"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "💳 Payments",
+            "item": [
+                {
+                    "name": "Initiate Payment",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"appointmentId\": \"{{appointment_id}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/payments/initiate",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "payments",
+                                "initiate"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Verify Payment",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"razorpay_order_id\": \"order_xxx\",\n  \"razorpay_payment_id\": \"pay_xxx\",\n  \"razorpay_signature\": \"signature_xxx\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/payments/verify",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "payments",
+                                "verify"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Payment History",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/payments?page=1&limit=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "payments"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Salon Payment Stats",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/payments/salon/{{salon_id}}/statistics",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "payments",
+                                "salon",
+                                "{{salon_id}}",
+                                "statistics"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "⭐ Reviews",
+            "item": [
+                {
+                    "name": "Submit Review",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"appointmentId\": \"{{appointment_id}}\",\n  \"rating\": 5,\n  \"comment\": \"Excellent service! Very professional.\",\n  \"serviceQuality\": 5,\n  \"punctuality\": 5,\n  \"cleanliness\": 5,\n  \"valueForMoney\": 4\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/reviews",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "reviews"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Salon Reviews",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/reviews/salon/{{salon_id}}?page=1&limit=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "reviews",
+                                "salon",
+                                "{{salon_id}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Salon Rating Summary",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/reviews/salon/{{salon_id}}/rating",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "reviews",
+                                "salon",
+                                "{{salon_id}}",
+                                "rating"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get My Reviews",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/reviews/my",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "reviews",
+                                "my"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "💈 Barbers",
+            "item": [
+                {
+                    "name": "Register as Barber",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.collectionVariables.set('barber_id', response.data._id || response.data.id);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"salonId\": \"{{salon_id}}\",\n  \"displayName\": \"Mike the Barber\",\n  \"bio\": \"10+ years of experience\",\n  \"specializations\": [\"Classic Cuts\", \"Beard Styling\"],\n  \"experience\": 10,\n  \"certifications\": [\"Professional Barber License\"]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/barbers",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "barbers"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Barber by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/barbers/{{barber_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "barbers",
+                                "{{barber_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Barber Profile",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"bio\": \"15+ years of experience in premium cuts\",\n  \"specializations\": [\"Classic Cuts\", \"Beard Styling\", \"Hair Coloring\"]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/barbers/{{barber_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "barbers",
+                                "{{barber_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Availability",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"availability\": [\n    {\n      \"day\": \"monday\",\n      \"isAvailable\": true,\n      \"timeSlots\": [\n        {\"start\": \"09:00\", \"end\": \"18:00\"}\n      ]\n    },\n    {\n      \"day\": \"sunday\",\n      \"isAvailable\": false,\n      \"timeSlots\": []\n    }\n  ]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/barbers/{{barber_id}}/availability",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "barbers",
+                                "{{barber_id}}",
+                                "availability"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Salon Barbers",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/barbers/salon/{{salon_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "barbers",
+                                "salon",
+                                "{{salon_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Pending Barbers (Owner)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/barbers/salon/{{salon_id}}/pending",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "barbers",
+                                "salon",
+                                "{{salon_id}}",
+                                "pending"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Approve Barber (Owner)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/barbers/{{barber_id}}/approve",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "barbers",
+                                "{{barber_id}}",
+                                "approve"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Reject Barber (Owner)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"reason\": \"Insufficient experience or documentation\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/barbers/{{barber_id}}/reject",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "barbers",
+                                "{{barber_id}}",
+                                "reject"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -51,7 +51,7 @@ export function createApp(): Application {
     });
 
     // Health check endpoint
-    app.get('/health', (req: Request, res: Response) => {
+    app.get('/health', (_req: Request, res: Response) => {
         res.status(200).json({
             success: true,
             message: 'Server is healthy',
@@ -61,7 +61,7 @@ export function createApp(): Application {
     });
 
     // Root endpoint
-    app.get('/', (req: Request, res: Response) => {
+    app.get('/', (_req: Request, res: Response) => {
         res.status(200).json({
             success: true,
             message: 'Styler API Server',
@@ -92,24 +92,19 @@ export function createApp(): Application {
     });
 
     // Global error handler
-    app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-        // Log error
+    app.use((err: Error, _req: Request, res: Response, _next: NextFunction): void => {
         logger.error('Unhandled error:', err);
 
-        // Handle known application exceptions
         if (err instanceof AppException) {
-            return res.status(err.statusCode).json(err.toJSON());
+            res.status(err.statusCode).json(err.toJSON());
+            return;
         }
 
-        // Handle unknown errors
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        res.status(500).json({
             success: false,
             error: {
-                code: 'INTERNAL_ERROR',
-                message: config.isProduction
-                    ? 'An unexpected error occurred'
-                    : err.message || 'Internal server error',
-                ...(config.isDevelopment && { stack: err.stack }),
+                code: 'INTERNAL_SERVER_ERROR',
+                message: 'An unexpected error occurred',
             },
         });
     });

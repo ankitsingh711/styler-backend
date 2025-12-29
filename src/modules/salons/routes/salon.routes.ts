@@ -100,4 +100,4 @@ router.put('/:id/operating-hours', authGuard, (req, res, next) =>
     salonController.updateOperatingHours(req, res, next)
 );
 
-export const salonRoutes = router;
+export const salonRoutes: Router = router;

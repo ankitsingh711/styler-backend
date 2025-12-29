@@ -79,21 +79,22 @@ export class ReviewRepository extends BaseRepository<IReview> {
       };
     }
 
+    const result = stats[0] as any;
     return {
-      averageRating: Math.round(stats[0].averageRating * 10) / 10,
-      totalReviews: stats[0].totalReviews,
+      averageRating: Math.round(result.averageRating * 10) / 10,
+      totalReviews: result.totalReviews,
       breakdown: {
-        5: stats[0].fiveStars,
-        4: stats[0].fourStars,
-        3: stats[0].threeStars,
-        2: stats[0].twoStars,
-        1: stats[0].oneStar,
+        5: result.fiveStars,
+        4: result.fourStars,
+        3: result.threeStars,
+        2: result.twoStars,
+        1: result.oneStar,
       },
       details: {
-        serviceQuality: Math.round(stats[0].serviceQuality * 10) / 10,
-        punctuality: Math.round(stats[0].punctuality * 10) / 10,
-        cleanliness: Math.round(stats[0].cleanliness * 10) / 10,
-        valueForMoney: Math.round(stats[0].valueForMoney * 10) / 10,
+        serviceQuality: Math.round(result.serviceQuality * 10) / 10,
+        punctuality: Math.round(result.punctuality * 10) / 10,
+        cleanliness: Math.round(result.cleanliness * 10) / 10,
+        valueForMoney: Math.round(result.valueForMoney * 10) / 10,
       },
     };
   }

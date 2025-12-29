@@ -50,6 +50,9 @@ export class BarberController {
     async getBarberById(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
+            if (!id) {
+                throw new BadRequestException('Barber ID is required');
+            }
             const barber = await barberService.getBarberById(id);
 
             res.status(HttpStatus.OK).json({
@@ -201,6 +204,9 @@ export class BarberController {
             const userId = req.userId;
             if (!userId) {
                 throw new BadRequestException('User ID not found');
+            }
+            if (!salonId) {
+                throw new BadRequestException('Salon ID is required');
             }
 
             const { page, limit } = parsePaginationQuery(req.query);

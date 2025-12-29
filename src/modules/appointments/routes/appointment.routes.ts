@@ -1,10 +1,8 @@
 import { Router } from 'express';
 import { appointmentController } from '../controllers/appointment.controller';
 import { authGuard } from '@shared/guards/auth.guard';
-import { rolesGuard } from '@shared/guards/roles.guard';
-import { UserRole } from '@common/constants';
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * @route   POST /api/v1/appointments/check-availability
@@ -87,4 +85,4 @@ router.post('/:id/cancel', authGuard, (req, res, next) =>
     appointmentController.cancelAppointment(req, res, next)
 );
 
-export const appointmentRoutes = router;
+export const appointmentRoutes: Router = router;

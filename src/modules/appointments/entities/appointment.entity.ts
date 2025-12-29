@@ -172,7 +172,7 @@ const AppointmentSchema = new Schema<IAppointment>(
         timestamps: true,
         toJSON: {
             virtuals: true,
-            transform: (doc, ret) => {
+            transform: (_doc, ret) => {
                 delete ret.__v;
                 return ret;
             },

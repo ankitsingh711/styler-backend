@@ -41,4 +41,4 @@ router.post('/:id/response', authGuard, (req, res, next) =>
     reviewController.addResponse(req, res, next)
 );
 
-export const reviewRoutes = router;
+export const reviewRoutes: Router = router;

@@ -131,9 +131,10 @@ export interface TokenPair {
 export interface AuthenticatedRequest extends Express.Request {
     user?: JwtPayload;
     userId?: string;
-    body: any;
-    params: any;
-    query: any;
+    body?: any;
+    params?: any;
+    query?: any;
+    headers?: any;
 }
 
 /**
