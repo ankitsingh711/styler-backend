@@ -131,6 +131,9 @@ export interface TokenPair {
 export interface AuthenticatedRequest extends Express.Request {
     user?: JwtPayload;
     userId?: string;
+    body: any;
+    params: any;
+    query: any;
 }
 
 /**
@@ -176,13 +179,19 @@ export interface NotificationOptions {
  * Rating aggregate
  */
 export interface RatingAggregate {
-    average: number;
-    count: number;
-    distribution?: {
-        1: number;
-        2: number;
-        3: number;
-        4: number;
+    averageRating: number;
+    totalReviews: number;
+    breakdown: {
         5: number;
+        4: number;
+        3: number;
+        2: number;
+        1: number;
+    };
+    details?: {
+        serviceQuality: number;
+        punctuality: number;
+        cleanliness: number;
+        valueForMoney: number;
     };
 }

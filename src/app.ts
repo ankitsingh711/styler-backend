@@ -11,6 +11,7 @@ import { authRoutes } from '@modules/auth/routes/auth.routes';
 import { salonRoutes } from '@modules/salons/routes/salon.routes';
 import { appointmentRoutes } from '@modules/appointments/routes/appointment.routes';
 import { paymentRoutes } from '@modules/payments/routes/payment.routes';
+import { reviewRoutes } from '@modules/reviews/routes/review.routes';
 
 /**
  * Create and configure Express application
@@ -74,6 +75,7 @@ export function createApp(): Application {
     app.use(`/api/${apiVersion}/salons`, salonRoutes);
     app.use(`/api/${apiVersion}/appointments`, appointmentRoutes);
     app.use(`/api/${apiVersion}/payments`, paymentRoutes);
+    app.use(`/api/${apiVersion}/reviews`, reviewRoutes);
 
     // 404 handler
     app.use((req: Request, res: Response) => {
