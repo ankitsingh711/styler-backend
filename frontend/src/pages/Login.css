@@ -1,144 +1,267 @@
-/* Login Page Styles */
-.login-page {
+/* Login Page - Modern Design */
+
+.login-page-modern {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    padding: 2rem 1rem;
+    position: relative;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    padding: 2rem;
+    overflow: hidden;
 }
 
-.login-container-wrapper {
+.login-bg-pattern {
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 20% 30%, rgba(245, 158, 11, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+    animation: pulse 8s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+.login-container-modern {
+    position: relative;
+    z-index: 1;
     width: 100%;
-    max-width: 650px;
-    margin: 0 auto;
+    max-width: 480px;
 }
 
-.login-card {
-    background: rgba(30, 41, 59, 0.9) !important;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(245, 158, 11, 0.2) !important;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4) !important;
+.login-content {
+    width: 100%;
 }
 
-/* Header */
-.login-header {
+/* Brand Section */
+.login-brand {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
 }
 
-.logo-container {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1.5rem;
+.brand-icon {
+    font-size: 64px;
+    color: #f59e0b;
+    margin-bottom: 1rem;
+    display: block;
+    animation: rotate 20s linear infinite;
 }
 
-.login-logo {
-    height: 50px;
-    width: auto;
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
 
-.login-title {
-    color: #f1f5f9 !important;
-    font-weight: 800 !important;
+.brand-title {
+    color: white !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.1em;
     margin-bottom: 0.5rem !important;
 }
 
-.login-subtitle {
-    color: #94a3b8 !important;
-    font-size: 16px;
+.brand-subtitle {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Auth Card */
+.auth-card-modern {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 24px !important;
+    padding: 2.5rem 2rem !important;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
 }
 
 /* Tabs */
-.login-tabs .ant-tabs-nav {
-    margin-bottom: 2rem !important;
+.auth-tabs .ant-tabs-nav {
+    margin-bottom: 2rem;
 }
 
-.login-tabs .ant-tabs-tab {
+.auth-tabs .ant-tabs-tab {
+    color: rgba(255, 255, 255, 0.5) !important;
     font-weight: 600;
     font-size: 16px;
+    padding: 12px 24px;
 }
 
-.login-tabs .ant-tabs-tab-active {
-    background: rgba(245, 158, 11, 0.1);
-    border-radius: 8px 8px 0 0;
+.auth-tabs .ant-tabs-tab:hover {
+    color: rgba(255, 255, 255, 0.8) !important;
 }
 
-/* Form */
-.login-form {
-    margin-top: 1.5rem;
+.auth-tabs .ant-tabs-tab-active {
+    color: white !important;
 }
 
-.login-form .ant-form-item {
-    margin-bottom: 1.5rem;
+.auth-tabs .ant-tabs-tab-active .tab-label {
+    color: white !important;
 }
 
-.login-form .ant-input,
-.login-form .ant-input-password {
-    border-radius: 8px;
-    background: rgba(15, 23, 42, 0.6);
-    border-color: rgba(245, 158, 11, 0.3);
+.auth-tabs .ant-tabs-ink-bar {
+    background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%) !important;
+    height: 3px !important;
 }
 
-.login-form .ant-input:hover,
-.login-form .ant-input-password:hover {
-    border-color: #f59e0b;
+.tab-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.login-form .ant-input:focus,
-.login-form .ant-input-password:focus,
-.login-form .ant-input-focused {
-    border-color: #f59e0b;
-    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+/* Form Styling */
+.auth-card-modern .ant-form-item-label>label {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 600;
 }
 
-.submit-button {
-    height: 48px !important;
-    font-weight: 700 !important;
+.auth-card-modern .ant-input,
+.auth-card-modern .ant-input-password {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    border-radius: 0;
+    padding: 12px 16px 12px 0;
+}
+
+.auth-card-modern .ant-input::placeholder,
+.auth-card-modern .ant-input-password input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.auth-card-modern .ant-input-prefix {
+    color: rgba(255, 255, 255, 0.5);
+    margin-right: 12px;
+}
+
+.auth-card-modern .ant-input-suffix {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.auth-card-modern .ant-input:hover,
+.auth-card-modern .ant-input-password:hover {
+    border-bottom-color: rgba(245, 158, 11, 0.5) !important;
+}
+
+.auth-card-modern .ant-input:focus,
+.auth-card-modern .ant-input-password:focus,
+.auth-card-modern .ant-input-focused {
+    border-bottom-color: #f59e0b !important;
+    box-shadow: none;
+}
+
+.auth-card-modern .ant-input-password input {
+    background: transparent !important;
+    color: white !important;
+}
+
+.auth-card-modern .ant-input-password .ant-input {
+    border: none !important;
+    padding: 0 !important;
+}
+
+.auth-card-modern .ant-input-affix-wrapper {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 0;
+    padding: 12px 16px 12px 0;
+}
+
+.auth-card-modern .ant-input-affix-wrapper:hover {
+    border-bottom-color: rgba(245, 158, 11, 0.5) !important;
+}
+
+.auth-card-modern .ant-input-affix-wrapper-focused {
+    border-bottom-color: #f59e0b !important;
+    box-shadow: none !important;
+}
+
+
+/* Submit Button */
+.auth-submit-btn {
+    height: 50px !important;
     font-size: 16px !important;
+    font-weight: 700 !important;
     background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
     border: none !important;
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4) !important;
-    transition: all 0.3s ease !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+    margin-top: 1rem;
+    transition: all 0.3s ease;
 }
 
-.submit-button:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6) !important;
+.auth-submit-btn:hover {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(245, 158, 11, 0.4) !important;
 }
 
-/* Footer */
-.login-footer {
+.auth-submit-btn:disabled,
+.auth-submit-btn.ant-btn-loading {
+    background: rgba(245, 158, 11, 0.5) !important;
+    box-shadow: none;
+}
+
+/* Footer Text */
+.login-footer-text {
     text-align: center;
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid rgba(148, 163, 184, 0.2);
+    color: rgba(255, 255, 255, 0.5) !important;
+    font-size: 13px;
+    margin-top: 2rem !important;
+    margin-bottom: 0 !important;
 }
 
-.back-button {
-    color: #94a3b8 !important;
-    font-weight: 500;
+/* Form Items */
+.auth-card-modern .ant-form-item {
+    margin-bottom: 1.25rem;
 }
 
-.back-button:hover {
-    color: #f59e0b !important;
+.auth-card-modern .ant-form-item-explain-error {
+    color: #ff6b6b;
+    font-size: 13px;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .login-page {
-        padding: 1rem 0.5rem;
+/* Responsive Design */
+@media (max-width: 576px) {
+    .login-page-modern {
+        padding: 1rem;
     }
 
-    .login-container-wrapper {
-        max-width: 100%;
+    .auth-card-modern {
+        padding: 2rem 1.5rem !important;
     }
 
-    .login-title {
-        font-size: 24px !important;
+    .brand-icon {
+        font-size: 52px;
     }
 
-    .login-subtitle {
-        font-size: 14px;
+    .brand-title {
+        font-size: 32px !important;
+    }
+
+    .auth-tabs .ant-tabs-tab {
+        padding: 10px 16px;
+        font-size: 15px;
     }
 }
