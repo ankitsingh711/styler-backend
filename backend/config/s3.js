@@ -30,7 +30,7 @@ const uploadToS3 = async (fileBuffer, fileName, mimeType) => {
             Key: uniqueFileName,
             Body: fileBuffer,
             ContentType: mimeType,
-            ACL: 'public-read',
+            // ACL removed - bucket has ACLs disabled (use bucket policy instead)
         };
 
         const command = new PutObjectCommand(uploadParams);

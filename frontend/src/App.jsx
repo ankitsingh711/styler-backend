@@ -5,7 +5,6 @@ import { RBACProvider } from './context/RBACContext';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import Loader from './components/common/Loader';
-import ToastContainer from './components/common/ToastContainer';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Pages
@@ -36,7 +35,6 @@ const Layout = ({ children, showFooter = true, showNavbar = true }) => {
 function AppContent() {
   return (
     <Router>
-      <ToastContainer />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Layout><Home /></Layout>} />

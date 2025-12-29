@@ -1,66 +1,44 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useCallback } from 'react';
+import { message } from 'antd';
 
 const ToastContext = createContext(null);
 
+// Configure message globally
+message.config({
+    top: 80,
+    duration: 3,
+    maxCount: 3,
+});
+
 export const ToastProvider = ({ children }) => {
-    const [toasts, setToasts] = useState([]);
-
-    const showToast = useCallback((message, type = 'info', duration = 3000) => {
-        const id = Date.now() + Math.random();
-        const newToast = {
-            id,
-            message,
-            type, // success, error, warning, info
-            duration
-        };
-
-        setToasts(prev => [...prev, newToast]);
-
-        // Auto remove toast after duration
-        if (duration > 0) {
-            setTimeout(() => {
-                removeToast(id);
-            }, duration);
-        }
-
-        return id;
+    const success = useCallback((msg, duration = 3) => {
+        return message.success(msg, duration);
     }, []);
 
-    const removeToast = useCallback((id) => {
-        setToasts(prev => prev.filter(toast => toast.id !== id));
+    const error = useCallback((msg, duration = 3) => {
+        return message.error(msg, duration);
     }, []);
 
-    const success = useCallback((message, duration) => {
-        return showToast(message, 'success', duration);
-    }, [showToast]);
+    const warning = useCallback((msg, duration = 3) => {
+        return message.warning(msg, duration);
+    }, []);
 
-    const error = useCallback((message, duration) => {
-        return showToast(message, 'error', duration);
-    }, [showToast]);
+    const info = useCallback((msg, duration = 3) => {
+        return message.info(msg, duration);
+    }, []);
 
-    const warning = useCallback((message, duration) => {
-        return showToast(message, 'warning', duration);
-    }, [showToast]);
-
-    const info = useCallback((message, duration) => {
-        return showToast(message, 'info', duration);
-    }, [showToast]);
-
-    const clearAll = useCallback(() => {
-        setToasts([]);
+    const loading = useCallback((msg) => {
+        return message.loading(msg, 0);
     }, []);
 
     return (
         <ToastContext.Provider
             value={{
-                toasts,
-                showToast,
-                removeToast,
                 success,
                 error,
                 warning,
                 info,
-                clearAll
+                loading,
             }}
         >
             {children}
