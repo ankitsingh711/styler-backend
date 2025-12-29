@@ -1,7 +1,10 @@
 import { useState } from 'react';
-import { Card, Image, Text, Button, Box, Badge, Group } from '@mantine/core';
+import { Card, Typography, Button, Badge } from 'antd';
 import { motion } from 'framer-motion';
-import { IconScissors } from '@tabler/icons-react';
+import { ScissorOutlined } from '@ant-design/icons';
+import './ServiceCard.css';
+
+const { Text } = Typography;
 
 const ServiceCard = ({ service, onBook }) => {
     const { name, serviceName, price, amount, description, image } = service;
@@ -17,81 +20,40 @@ const ServiceCard = ({ service, onBook }) => {
             style={{ height: '100%' }}
         >
             <Card
-                shadow="sm"
-                padding="lg"
-                radius="md"
-                withBorder
-                style={{
-                    height: '100%',
-                    minHeight: 420,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    position: 'relative',
-                }}
-            >
-                {image && !imageError ? (
-                    <Card.Section>
-                        <Image
+                hoverable
+                className="service-card-component"
+                cover={
+                    image && !imageError ? (
+                        <img
                             src={image}
-                            height={200}
                             alt={displayName}
                             onError={() => setImageError(true)}
-                            style={{
-                                transition: 'transform 0.4s ease',
-                            }}
+                            style={{ height: 200, objectFit: 'cover' }}
                         />
-                    </Card.Section>
-                ) : (
-                    <Card.Section>
-                        <Box
-                            style={{
-                                height: 200,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
-                                color: 'white',
-                            }}
+                    ) : (
+                        <div className="service-card-placeholder">
+                            <ScissorOutlined style={{ fontSize: 64, opacity: 0.7 }} />
+                        </div>
+                    )
+                }
+            >
+                <Badge.Ribbon text={`₹${displayPrice}`} color="#f59e0b">
+                    <div style={{ minHeight: 120 }}>
+                        <Text strong style={{ fontSize: 20, display: 'block', marginBottom: 8 }}>
+                            {displayName}
+                        </Text>
+                        <Text type="secondary" ellipsis={{ rows: 2 }} style={{ display: 'block', marginBottom: 16, minHeight: 40 }}>
+                            {description || 'Premium grooming service tailored for you'}
+                        </Text>
+                        <Button
+                            type="primary"
+                            block
+                            onClick={() => onBook && onBook(service)}
                         >
-                            <IconScissors size={64} opacity={0.7} />
-                        </Box>
-                    </Card.Section>
-                )}
-
-                <Box style={{ position: 'absolute', top: 16, right: 16, zIndex: 10 }}>
-                    <Badge color="amber" size="lg" variant="filled">
-                        ₹{displayPrice}
-                    </Badge>
-                </Box>
-
-                <Box style={{ flexGrow: 1, paddingTop: '1rem' }}>
-                    <Text size="xl" fw={700} style={{ minHeight: 64 }}>
-                        {displayName}
-                    </Text>
-                    <Text
-                        size="sm"
-                        c="dimmed"
-                        mt="xs"
-                        lineClamp={2}
-                        style={{ minHeight: 40 }}
-                    >
-                        {description || 'Premium grooming service tailored for you'}
-                    </Text>
-                </Box>
-
-                <Button
-                    fullWidth
-                    color="amber"
-                    onClick={() => onBook && onBook(service)}
-                    mt="md"
-                    styles={{
-                        root: {
-                            fontWeight: 600,
-                        },
-                    }}
-                >
-                    Book Now
-                </Button>
+                            Book Now
+                        </Button>
+                    </div>
+                </Badge.Ribbon>
             </Card>
         </motion.div>
     );

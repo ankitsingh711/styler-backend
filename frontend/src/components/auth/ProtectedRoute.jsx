@@ -2,7 +2,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useRBAC } from '../../context/RBACContext';
-import { Center, Loader } from '@mantine/core';
+import { Spin } from 'antd';
 
 /**
  * ProtectedRoute component - Protects routes based on permissions or roles
@@ -28,9 +28,15 @@ const ProtectedRoute = ({
     // Show loading state while checking auth and permissions
     if (authLoading || rbacLoading) {
         return (
-            <Center style={{ minHeight: '100vh' }}>
-                <Loader size="lg" />
-            </Center>
+            <div style={{
+                minHeight: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)'
+            }}>
+                <Spin size="large" />
+            </div>
         );
     }
 
