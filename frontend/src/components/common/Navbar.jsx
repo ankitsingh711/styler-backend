@@ -1,17 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import {
-    Layout,
-    Button,
-    Dropdown,
-    Avatar,
-    Drawer,
-    Menu as AntMenu,
-    Space,
-    Typography,
-    Divider,
-} from 'antd';
+import { Button, Dropdown, Avatar, Drawer, Menu as AntMenu, Space } from 'antd';
 import {
     MenuOutlined,
     UserOutlined,
@@ -23,9 +13,6 @@ import {
     LoginOutlined,
 } from '@ant-design/icons';
 import './Navbar.css';
-
-const { Header } = Layout;
-const { Text } = Typography;
 
 const Navbar = () => {
     const { isAuthenticated, isAdmin, user, logout } = useAuth();
@@ -43,38 +30,20 @@ const Navbar = () => {
         setMobileOpen(false);
     };
 
-    const closeMobile = () => setMobileOpen(false);
-    const toggleMobile = () => setMobileOpen(!mobileOpen);
+    const navItems = [
+        { label: 'Home', path: '/', icon: <HomeOutlined /> },
+        { label: 'About', path: '/about', icon: <InfoCircleOutlined /> },
+        { label: 'Services', path: '/services', icon: <ScissorOutlined /> },
+    ];
 
-    // Navigation items
-    const getNavItems = () => {
-        const baseItems = [
-            { label: 'Home', path: '/', icon: <HomeOutlined /> },
-            { label: 'About', path: '/about', icon: <InfoCircleOutlined /> },
-            { label: 'Services', path: '/services', icon: <ScissorOutlined /> },
-        ];
-
-        if (isAuthenticated()) {
-            if (isAdmin()) {
-                baseItems.push({ label: 'Dashboard', path: '/admin/dashboard', icon: <DashboardOutlined /> });
-            } else {
-                baseItems.push({ label: 'My Profile', path: '/profile', icon: <UserOutlined /> });
-            }
-        }
-
-        return baseItems;
-    };
-
-    const navItems = getNavItems();
-
-    // User dropdown menu items
+    // User dropdown menu
     const userMenuItems = [
         {
             key: 'user-info',
             label: (
-                <div className="user-menu-header">
-                    <Text type="secondary" style={{ fontSize: 12 }}>Signed in as</Text>
-                    <Text strong>{user?.userName || user?.email}</Text>
+                <div style={{ padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                    <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>Signed in as</div>
+                    <div style={{ color: 'white', fontWeight: 600 }}>{user?.userName || user?.email}</div>
                 </div>
             ),
             disabled: true,
@@ -112,39 +81,25 @@ const Navbar = () => {
 
     return (
         <>
-            <Header className="navbar-header">
+            {/* Desktop & Mobile Navbar */}
+            <nav className="styler-navbar">
                 <div className="navbar-container">
                     {/* Mobile Menu Button */}
                     <Button
                         type="text"
                         icon={<MenuOutlined />}
-                        onClick={toggleMobile}
-                        className="mobile-menu-btn"
+                        onClick={() => setMobileOpen(true)}
+                        className="mobile-menu-toggle"
                     />
 
-                    {/* Logo - Desktop */}
-                    <div
-                        className="logo-desktop"
-                        onClick={() => navigate('/')}
-                    >
-                        <img
-                            src="/images/styler-logo.png"
-                            alt="Styler"
-                            className="logo-img"
-                        />
+                    {/* Logo */}
+                    <div className="navbar-logo" onClick={() => navigate('/')}>
+                        <ScissorOutlined className="logo-icon" />
+                        <span className="logo-text">STYLER</span>
                     </div>
 
-                    {/* Logo - Mobile */}
-                    <div className="logo-mobile">
-                        <img
-                            src="/images/styler-logo.png"
-                            alt="Styler"
-                            className="logo-img-mobile"
-                        />
-                    </div>
-
-                    {/* Desktop Navigation */}
-                    <div className="nav-links-desktop">
+                    {/* Desktop Navigation Links */}
+                    <div className="navbar-links">
                         {navItems.map((item) => (
                             <Link
                                 key={item.path}
@@ -157,67 +112,66 @@ const Navbar = () => {
                         ))}
                     </div>
 
-                    {/* Get Started Button - Non-authenticated */}
-                    {!isAuthenticated() && (
-                        <Button
-                            type="primary"
-                            icon={<LoginOutlined />}
-                            onClick={() => navigate('/login')}
-                            className="get-started-btn"
-                        >
-                            Get Started
-                        </Button>
-                    )}
-
-                    {/* User Menu - Authenticated */}
-                    {isAuthenticated() && (
-                        <Dropdown
-                            menu={{ items: userMenuItems }}
-                            trigger={['click']}
-                            placement="bottomRight"
-                        >
-                            <Avatar
-                                src={user?.profilePicture}
-                                size="default"
-                                className="user-avatar"
+                    {/* Right Section */}
+                    <div className="navbar-actions">
+                        {!isAuthenticated() ? (
+                            <Button
+                                type="primary"
+                                icon={<LoginOutlined />}
+                                onClick={() => navigate('/login')}
+                                className="get-started-btn"
                             >
-                                {user?.userName?.[0]?.toUpperCase() || 'U'}
-                            </Avatar>
-                        </Dropdown>
-                    )}
+                                Get Started
+                            </Button>
+                        ) : (
+                            <Dropdown
+                                menu={{ items: userMenuItems }}
+                                trigger={['click']}
+                                placement="bottomRight"
+                                overlayClassName="user-dropdown"
+                            >
+                                <div className="user-avatar-wrapper">
+                                    <Avatar
+                                        src={user?.profilePicture}
+                                        size={40}
+                                        className="user-avatar"
+                                    >
+                                        {user?.userName?.[0]?.toUpperCase() || 'U'}
+                                    </Avatar>
+                                </div>
+                            </Dropdown>
+                        )}
+                    </div>
                 </div>
-            </Header>
+            </nav>
 
             {/* Mobile Drawer */}
             <Drawer
                 title={
-                    <img
-                        src="/images/styler-logo.png"
-                        alt="Styler"
-                        style={{ height: 40, width: 'auto' }}
-                    />
+                    <div className="mobile-drawer-header">
+                        <ScissorOutlined style={{ fontSize: 24, color: '#f59e0b', marginRight: 12 }} />
+                        <span style={{ fontSize: 20, fontWeight: 800, color: 'white' }}>STYLER</span>
+                    </div>
                 }
                 placement="left"
-                onClose={closeMobile}
+                onClose={() => setMobileOpen(false)}
                 open={mobileOpen}
                 width={280}
-                className="mobile-drawer"
+                className="mobile-nav-drawer"
             >
                 <Space direction="vertical" style={{ width: '100%' }} size="large">
                     <AntMenu
                         mode="inline"
                         selectedKeys={[location.pathname]}
                         items={mobileMenuItems}
-                        className="mobile-menu"
+                        className="mobile-nav-menu"
                     />
 
-                    <Divider />
-
-                    {/* Mobile Login/Logout */}
                     {!isAuthenticated() ? (
                         <Button
                             type="primary"
                             block
+                            size="large"
                             icon={<LoginOutlined />}
                             onClick={() => {
                                 handleNavigation('/login');
@@ -226,14 +180,31 @@ const Navbar = () => {
                             Get Started
                         </Button>
                     ) : (
-                        <Button
-                            danger
-                            block
-                            icon={<LogoutOutlined />}
-                            onClick={handleLogout}
-                        >
-                            Logout
-                        </Button>
+                        <>
+                            <div className="mobile-user-info">
+                                <Avatar
+                                    src={user?.profilePicture}
+                                    size={50}
+                                    style={{ border: '3px solid #f59e0b' }}
+                                >
+                                    {user?.userName?.[0]?.toUpperCase() || 'U'}
+                                </Avatar>
+                                <div style={{ marginLeft: 12 }}>
+                                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Signed in as</div>
+                                    <div style={{ fontSize: 14, color: 'white', fontWeight: 600 }}>
+                                        {user?.userName || user?.email}
+                                    </div>
+                                </div>
+                            </div>
+                            <Button
+                                danger
+                                block
+                                icon={<LogoutOutlined />}
+                                onClick={handleLogout}
+                            >
+                                Logout
+                            </Button>
+                        </>
                     )}
                 </Space>
             </Drawer>

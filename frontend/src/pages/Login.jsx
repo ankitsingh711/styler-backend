@@ -128,11 +128,6 @@ const Login = ({ isRegisterMode = false }) => {
                     {/* Header */}
                     <div className="login-header">
                         <div className="logo-container">
-                            <img
-                                src="/images/styler-logo.png"
-                                alt="Styler"
-                                className="login-logo"
-                            />
                         </div>
                         <Title level={2} className="login-title">
                             {isLogin ? 'Welcome Back' : 'Create Account'}
