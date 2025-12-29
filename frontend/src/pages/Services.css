@@ -1,0 +1,59 @@
+/* Services Page Styles */
+.services-page {
+    min-height: 100vh;
+}
+
+.services-hero {
+    min-height: 40vh;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    padding: 64px 0;
+}
+
+.services-title {
+    font-size: 48px !important;
+    font-weight: 900 !important;
+    color: white !important;
+    margin: 24px 0 16px !important;
+}
+
+.services-subtitle {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.7);
+    display: block;
+}
+
+.services-booking-section {
+    padding: 64px 0;
+    background: #0f172a;
+}
+
+.booking-card {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(30, 41, 59, 0.9) !important;
+    border-color: rgba(245, 158, 11, 0.2) !important;
+}
+
+.booking-steps {
+    padding: 0 24px;
+}
+
+.booking-steps .ant-steps-item-title {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.booking-steps .ant-steps-item-description {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+@media (max-width: 768px) {
+    .services-title {
+        font-size: 36px !important;
+    }
+
+    .services-booking-section {
+        padding: 48px 0;
+    }
+}

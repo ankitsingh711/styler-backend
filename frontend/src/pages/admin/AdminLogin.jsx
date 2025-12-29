@@ -1,58 +1,35 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import {
-    Box,
-    Container,
-    Paper,
-    TextInput,
-    PasswordInput,
-    Button,
-    Title,
-    Text,
-    Stack,
-    rem,
-} from '@mantine/core';
-import {
-    IconMail,
-    IconLock,
-    IconShieldLock,
-} from '@tabler/icons-react';
+import { Form, Input, Button, Typography, Card } from 'antd';
+import { MailOutlined, LockOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import { authService } from '../../services/authService';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { USER_TYPES } from '../../utils/constants';
-import { adminLoginSchema } from '../../utils/validationSchemas';
+import './AdminLogin.css';
 
-const MotionPaper = motion(Paper);
+const { Title, Text } = Typography;
+const MotionCard = motion(Card);
 
 const AdminLogin = () => {
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuth();
     const { success, error: showError } = useToast();
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors, isSubmitting }
-    } = useForm({
-        resolver: yupResolver(adminLoginSchema),
-        mode: 'onBlur'
-    });
-
-    const onSubmit = async (data) => {
+    const onSubmit = async (values) => {
+        setLoading(true);
         try {
             const response = await authService.adminLogin({
-                email: data.email,
-                password: data.password,
+                email: values.email,
+                password: values.password,
             });
 
             login({
                 token: response.token,
                 refreshToken: response.refreshToken,
-                email: data.email,
+                email: values.email,
                 userType: USER_TYPES.ADMIN,
                 name: response.username || 'Admin',
             });
@@ -62,98 +39,84 @@ const AdminLogin = () => {
         } catch (err) {
             const errorMessage = err.response?.data?.message || 'Invalid admin credentials';
             showError(errorMessage);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <Box
-            style={{
-                minHeight: '100vh',
-                display: 'flex',
-                alignItems: 'center',
-                background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-                padding: '2rem 0',
-            }}
-        >
-            <Container size="sm">
-                <MotionPaper
+        <div className="admin-login-page">
+            <div className="admin-login-container">
+                <MotionCard
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
-                    shadow="xl"
-                    p="xl"
-                    radius="lg"
-                    style={{
-                        border: '1px solid rgba(245, 158, 11, 0.2)',
-                    }}
+                    className="admin-login-card"
                 >
                     {/* Header */}
-                    <Box style={{ marginBottom: rem(32), textAlign: 'center' }}>
-                        <Box
-                            style={{
-                                width: 80,
-                                height: 80,
-                                borderRadius: '50%',
-                                background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                margin: '0 auto',
-                                marginBottom: rem(24),
-                            }}
-                        >
-                            <IconShieldLock size={40} color="#f59e0b" />
-                        </Box>
-                        <Title order={2} fw={800} mb="xs">
+                    <div className="admin-login-header">
+                        <div className="admin-icon-wrapper">
+                            <SafetyCertificateOutlined className="admin-shield-icon" />
+                        </div>
+                        <Title level={2} className="admin-login-title">
                             Admin Login
                         </Title>
-                        <Text c="dimmed">
+                        <Text type="secondary" className="admin-login-subtitle">
                             Access the admin dashboard
                         </Text>
-                    </Box>
+                    </div>
 
                     {/* Form */}
-                    <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-                        <Stack gap="md">
-                            <TextInput
-                                label="Admin Email"
+                    <Form
+                        name="admin-login"
+                        onFinish={onSubmit}
+                        layout="vertical"
+                        size="large"
+                        className="admin-login-form"
+                    >
+                        <Form.Item
+                            name="email"
+                            rules={[
+                                { required: true, message: 'Please enter your email' },
+                                { type: 'email', message: 'Please enter a valid email' },
+                            ]}
+                        >
+                            <Input
+                                prefix={<MailOutlined />}
                                 placeholder="admin@email.com"
                                 type="email"
-                                leftSection={<IconMail size={16} />}
-                                {...register('email')}
-                                error={errors.email?.message}
                             />
+                        </Form.Item>
 
-                            <PasswordInput
-                                label="Password"
+                        <Form.Item
+                            name="password"
+                            rules={[
+                                { required: true, message: 'Please enter yourpassword' },
+                                { min: 6, message: 'Password must be at least 6 characters' },
+                            ]}
+                        >
+                            <Input.Password
+                                prefix={<LockOutlined />}
                                 placeholder="Enter your password"
-                                leftSection={<IconLock size={16} />}
-                                {...register('password')}
-                                error={errors.password?.message}
                             />
+                        </Form.Item>
 
+                        <Form.Item>
                             <Button
-                                type="submit"
-                                fullWidth
-                                size="lg"
-                                loading={isSubmitting}
-                                styles={{
-                                    root: {
-                                        fontWeight: 700,
-                                        background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
-                                        '&:hover': {
-                                            background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-                                        },
-                                    },
-                                }}
+                                type="primary"
+                                htmlType="submit"
+                                block
+                                size="large"
+                                loading={loading}
+                                className="admin-login-btn"
                             >
                                 Login
                             </Button>
-                        </Stack>
-                    </Box>
-                </MotionPaper>
-            </Container>
-        </Box>
+                        </Form.Item>
+                    </Form>
+                </MotionCard>
+            </div>
+        </div>
     );
 };
 

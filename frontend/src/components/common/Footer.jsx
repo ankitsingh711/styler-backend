@@ -1,6 +1,18 @@
-import { Box, Container, Grid, Text, Anchor, ActionIcon, Divider, Stack, Group, Title, rem } from '@mantine/core';
-import { IconBrandFacebook, IconBrandTwitter, IconBrandInstagram, IconBrandLinkedin, IconPhone, IconMail, IconMapPin } from '@tabler/icons-react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Layout, Row, Col, Typography, Space, Divider } from 'antd';
+import {
+    FacebookOutlined,
+    TwitterOutlined,
+    InstagramOutlined,
+    LinkedinOutlined,
+    PhoneOutlined,
+    MailOutlined,
+    EnvironmentOutlined,
+} from '@ant-design/icons';
+import { Link } from 'react-router-dom';
+import './Footer.css';
+
+const { Footer: AntFooter } = Layout;
+const { Title, Text, Link: AntLink } = Typography;
 
 const Footer = () => {
     const footerLinks = {
@@ -8,7 +20,6 @@ const Footer = () => {
             { label: 'Home', path: '/' },
             { label: 'Services', path: '/services' },
             { label: 'About Us', path: '/about' },
-            { label: 'Contact', path: '/contact' },
         ],
         'Services': [
             { label: 'Hair Styling', path: '/services' },
@@ -19,177 +30,102 @@ const Footer = () => {
     };
 
     const socialMedia = [
-        { icon: IconBrandFacebook, label: 'Facebook', link: '#' },
-        { icon: IconBrandTwitter, label: 'Twitter', link: '#' },
-        { icon: IconBrandInstagram, label: 'Instagram', link: '#' },
-        { icon: IconBrandLinkedin, label: 'LinkedIn', link: '#' },
+        { icon: <FacebookOutlined />, label: 'Facebook', link: '#' },
+        { icon: <TwitterOutlined />, label: 'Twitter', link: '#' },
+        { icon: <InstagramOutlined />, label: 'Instagram', link: '#' },
+        { icon: <LinkedinOutlined />, label: 'LinkedIn', link: '#' },
     ];
 
     return (
-        <Box
-            component="footer"
-            style={{
-                background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-                color: 'white',
-                paddingTop: rem(64),
-                paddingBottom: rem(32),
-                marginTop: 'auto',
-            }}
-        >
-            <Container size="lg">
-                <Grid>
+        <AntFooter className="footer">
+            <div className="footer-container">
+                <Row gutter={[32, 32]}>
                     {/* Brand Section */}
-                    <Grid.Col span={{ base: 12, md: 4 }}>
-                        <Box mb="md">
+                    <Col xs={24} md={8}>
+                        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
                             <img
                                 src="/images/styler-logo.png"
                                 alt="Styler"
-                                style={{ height: 50, marginBottom: 16 }}
+                                className="footer-logo"
                             />
-                            <Text size="sm" opacity={0.8} style={{ lineHeight: 1.8 }}>
+                            <Text className="footer-description">
                                 Your premier destination for professional grooming and styling.
                                 Experience excellence with our expert stylists.
                             </Text>
-                        </Box>
 
-                        {/* Contact Info */}
-                        <Stack gap="xs">
-                            <Group gap="xs">
-                                <IconPhone size={20} color="#f59e0b" />
-                                <Text size="sm" opacity={0.8}>
-                                    +91 1234567890
-                                </Text>
-                            </Group>
-                            <Group gap="xs">
-                                <IconMail size={20} color="#f59e0b" />
-                                <Text size="sm" opacity={0.8}>
-                                    info@stylersalon.com
-                                </Text>
-                            </Group>
-                            <Group gap="xs">
-                                <IconMapPin size={20} color="#f59e0b" />
-                                <Text size="sm" opacity={0.8}>
-                                    162+ locations nationwide
-                                </Text>
-                            </Group>
-                        </Stack>
-                    </Grid.Col>
+                            {/* Contact Info */}
+                            <Space direction="vertical" size="small">
+                                <Space>
+                                    <PhoneOutlined className="footer-icon" />
+                                    <Text className="footer-text">+91 1234567890</Text>
+                                </Space>
+                                <Space>
+                                    <MailOutlined className="footer-icon" />
+                                    <Text className="footer-text">info@stylersalon.com</Text>
+                                </Space>
+                                <Space>
+                                    <EnvironmentOutlined className="footer-icon" />
+                                    <Text className="footer-text">162+ locations nationwide</Text>
+                                </Space>
+                            </Space>
+                        </Space>
+                    </Col>
 
                     {/* Links Sections */}
                     {Object.entries(footerLinks).map(([title, links]) => (
-                        <Grid.Col key={title} span={{ base: 6, md: 2 }}>
-                            <Title order={6} fw={700} mb="sm" c="amber">
-                                {title}
-                            </Title>
-                            <Stack gap="xs">
+                        <Col key={title} xs={12} md={4}>
+                            <Title level={5} className="footer-title">{title}</Title>
+                            <Space direction="vertical" size="small">
                                 {links.map((link) => (
-                                    <Anchor
+                                    <Link
                                         key={link.label}
-                                        component={RouterLink}
                                         to={link.path}
-                                        c="white"
-                                        opacity={0.8}
-                                        size="sm"
-                                        underline="never"
-                                        style={{
-                                            transition: 'all 0.3s',
-                                        }}
-                                        styles={{
-                                            root: {
-                                                '&:hover': {
-                                                    opacity: 1,
-                                                    color: '#f59e0b',
-                                                },
-                                            },
-                                        }}
+                                        className="footer-link"
                                     >
                                         {link.label}
-                                    </Anchor>
+                                    </Link>
                                 ))}
-                            </Stack>
-                        </Grid.Col>
+                            </Space>
+                        </Col>
                     ))}
 
-                    {/* Newsletter Section */}
-                    <Grid.Col span={{ base: 12, md: 4 }}>
-                        <Title order={6} fw={700} mb="sm" c="amber">
-                            Follow Us
-                        </Title>
-                        <Text size="sm" opacity={0.8} mb="md">
+                    {/* Social Section */}
+                    <Col xs={24} md={8}>
+                        <Title level={5} className="footer-title">Follow Us</Title>
+                        <Text className="footer-text footer-social-text">
                             Stay connected with us on social media for latest updates and offers.
                         </Text>
-                        <Group gap="xs">
+                        <Space size="middle" className="social-icons">
                             {socialMedia.map((social) => (
-                                <ActionIcon
+                                <a
                                     key={social.label}
-                                    component="a"
                                     href={social.link}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    size="lg"
-                                    variant="light"
-                                    color="amber"
-                                    styles={{
-                                        root: {
-                                            transition: 'all 0.3s',
-                                            '&:hover': {
-                                                backgroundColor: '#f59e0b',
-                                                color: 'white',
-                                            },
-                                        },
-                                    }}
+                                    className="social-icon"
+                                    aria-label={social.label}
                                 >
-                                    <social.icon size={20} />
-                                </ActionIcon>
+                                    {social.icon}
+                                </a>
                             ))}
-                        </Group>
-                    </Grid.Col>
-                </Grid>
+                        </Space>
+                    </Col>
+                </Row>
 
-                <Divider my="xl" style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />
+                <Divider className="footer-divider" />
 
                 {/* Bottom Section */}
-                <Group justify="space-between" style={{ flexDirection: { base: 'column', sm: 'row' } }}>
-                    <Text size="sm" opacity={0.7}>
+                <div className="footer-bottom">
+                    <Text className="footer-copyright">
                         © {new Date().getFullYear()} Styler Salon. All rights reserved.
                     </Text>
-                    <Group gap="xl">
-                        <Anchor
-                            href="#"
-                            c="white"
-                            opacity={0.7}
-                            size="sm"
-                            underline="never"
-                            styles={{
-                                root: {
-                                    '&:hover': {
-                                        opacity: 1,
-                                    },
-                                },
-                            }}
-                        >
-                            Privacy Policy
-                        </Anchor>
-                        <Anchor
-                            href="#"
-                            c="white"
-                            opacity={0.7}
-                            size="sm"
-                            underline="never"
-                            styles={{
-                                root: {
-                                    '&:hover': {
-                                        opacity: 1,
-                                    },
-                                },
-                            }}
-                        >
-                            Terms of Service
-                        </Anchor>
-                    </Group>
-                </Group>
-            </Container>
-        </Box>
+                    <Space size="large" className="footer-legal">
+                        <AntLink href="#" className="footer-legal-link">Privacy Policy</AntLink>
+                        <AntLink href="#" className="footer-legal-link">Terms of Service</AntLink>
+                    </Space>
+                </div>
+            </div>
+        </AntFooter>
     );
 };
 

@@ -1,75 +1,62 @@
-import { Paper, Text, Group, Box } from '@mantine/core';
+import { Card, Typography, Space } from 'antd';
 import {
-    IconMapPin,
-    IconStar,
-    IconScissors,
-    IconCalendarMonth,
-    IconHeart,
-    IconTrophy
-} from '@tabler/icons-react';
+    EnvironmentOutlined,
+    StarOutlined,
+    ScissorOutlined,
+    CalendarOutlined,
+    HeartOutlined,
+    TrophyOutlined,
+} from '@ant-design/icons';
+import './StatCard.css';
+
+const { Text } = Typography;
 
 const StatCard = ({ iconName, title, count, trend, color }) => {
     const renderIcon = () => {
-        const iconProps = { size: 36, stroke: 1.5 };
+        const iconProps = { style: { fontSize: 36 } };
 
         switch (iconName) {
             case 'location':
-                return <IconMapPin {...iconProps} />;
+                return <EnvironmentOutlined {...iconProps} />;
             case 'star':
-                return <IconStar {...iconProps} />;
+                return <StarOutlined {...iconProps} />;
             case 'scissors':
-                return <IconScissors {...iconProps} />;
+                return <ScissorOutlined {...iconProps} />;
             case 'calendar':
-                return <IconCalendarMonth {...iconProps} />;
+                return <CalendarOutlined {...iconProps} />;
             case 'heart':
-                return <IconHeart {...iconProps} />;
+                return <HeartOutlined {...iconProps} />;
             case 'trophy':
-                return <IconTrophy {...iconProps} />;
+                return <TrophyOutlined {...iconProps} />;
             default:
-                return <IconMapPin {...iconProps} />;
+                return <EnvironmentOutlined {...iconProps} />;
         }
     };
 
     return (
-        <Paper
-            shadow="md"
-            radius="lg"
-            p="xl"
+        <Card
+            hoverable
+            className="stat-card"
             style={{
                 background: `linear-gradient(135deg, ${color}15 0%, ${color}08 100%)`,
                 border: `2px solid ${color}20`,
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                cursor: 'pointer',
-            }}
-            sx={{
-                '&:hover': {
-                    transform: 'translateY(-8px)',
-                    boxShadow: `0 12px 40px ${color}30`,
-                    borderColor: `${color}40`,
-                },
             }}
         >
-            <Group justify="space-between" mb="md">
-                <Box
+            <Space direction="horizontal" align="start" className="stat-card-header">
+                <div
+                    className="stat-card-icon"
                     style={{
-                        width: 64,
-                        height: 64,
-                        borderRadius: '50%',
                         background: `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)`,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white',
                         boxShadow: `0 8px 24px ${color}40`,
                     }}
                 >
                     {renderIcon()}
-                </Box>
+                </div>
 
                 {trend && (
                     <Text
-                        size="sm"
-                        fw={600}
+                        strong
+                        className="stat-card-trend"
                         style={{
                             color: trend.startsWith('+') ? '#10b981' : '#ef4444',
                         }}
@@ -77,32 +64,21 @@ const StatCard = ({ iconName, title, count, trend, color }) => {
                         {trend}
                     </Text>
                 )}
-            </Group>
+            </Space>
 
             <Text
-                size="2.5rem"
-                fw={800}
+                className="stat-card-count"
                 style={{
-                    lineHeight: 1.2,
                     background: `linear-gradient(135deg, ${color} 0%, ${color}cc 100%)`,
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
-                    marginBottom: '0.5rem',
                 }}
             >
                 {count}
             </Text>
 
-            <Text
-                size="sm"
-                c="dimmed"
-                fw={600}
-                tt="uppercase"
-                style={{ letterSpacing: '0.05em' }}
-            >
-                {title}
-            </Text>
-        </Paper>
+            <Text className="stat-card-title">{title}</Text>
+        </Card>
     );
 };
 

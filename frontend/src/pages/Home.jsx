@@ -1,35 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {
-    Box,
-    Container,
-    Title,
-    Text,
-    Button,
-    Grid,
-    Card,
-    Image,
-    Paper,
-    Stack,
-    Badge,
-    Loader,
-    Group,
-    rem,
-} from '@mantine/core';
-import {
-    IconArrowRight,
-    IconScissors,
-    IconStar,
-    IconMapPin,
-    IconPhone,
-} from '@tabler/icons-react';
+import { Typography, Button, Row, Col, Card, Badge, Spin, Space } from 'antd';
+import { ArrowRightOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import StatCard from '../components/common/StatCard';
 import { useAuth } from '../context/AuthContext';
 import { fetchStats } from '../services/statsService';
+import './Home.css';
 
-const MotionBox = motion(Box);
-const MotionPaper = motion(Paper);
+const { Title, Text } = Typography;
+
+const MotionDiv = motion.div;
 
 // Color mapping for backend data
 const colorMap = {
@@ -44,20 +25,15 @@ const colorMap = {
 const Home = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
-
-    // State for dynamic stats
     const [stats, setStats] = useState([]);
     const [statsLoading, setStatsLoading] = useState(true);
 
-    // Fetch stats on component mount
     useEffect(() => {
         const loadStats = async () => {
             try {
                 const data = await fetchStats();
-                // Ensure stats is an array - API might return { stats: [...] } or just [...]
                 const statsArray = Array.isArray(data) ? data : (data?.stats || []);
 
-                // If no stats returned, use default fallback
                 if (statsArray.length === 0) {
                     setStats([
                         { iconName: 'location', title: 'Branches', count: '20+', color: colorMap.location },
@@ -73,7 +49,6 @@ const Home = () => {
                 setStatsLoading(false);
             } catch (error) {
                 console.error('Error loading stats:', error);
-                // Fallback to default stats
                 setStats([
                     { iconName: 'location', title: 'Branches', count: '20+', color: colorMap.location },
                     { iconName: 'star', title: 'Happy Clients', count: '5000+', color: colorMap.star },
@@ -112,442 +87,170 @@ const Home = () => {
         },
     ];
 
-    const trendingStyles = [
-        'https://d3r0z4awu7ba6n.cloudfront.net/images/looks/homeBanner/1.jpg',
-        'https://d3r0z4awu7ba6n.cloudfront.net/images/looks/homeBanner/2.jpg',
-        'https://d3r0z4awu7ba6n.cloudfront.net/images/looks/homeBanner/6.jpg',
-        'https://d3r0z4awu7ba6n.cloudfront.net/images/looks/homeBanner/4.jpg',
-    ];
-
-    const partners = [
-        { name: 'L\'Oreal', logo: '/partners/loreal.png' },
-        { name: 'Schwarzkopf', logo: '/partners/schwarzkopf.png' },
-        { name: 'Wella', logo: '/partners/wella.png' },
-        { name: 'Redken', logo: '/partners/redken.png' },
-    ];
-
     return (
-        <Box>
+        <div className="home-page">
             {/* Hero Section */}
-            <Box
-                style={{
-                    minHeight: '100vh',
-                    position: 'relative',
-                    display: 'flex',
-                    alignItems: 'center',
-                    background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-                    overflow: 'hidden',
-                }}
-            >
-                {/* Background Pattern */}
-                <Box
-                    style={{
-                        position: 'absolute',
-                        inset: 0,
-                        opacity: 0.1,
-                        backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(245, 158, 11, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.3) 0%, transparent 50%)',
-                    }}
-                />
+            <div className="hero-section">
+                <div className="hero-pattern" />
 
-                <Container size="lg" style={{ position: 'relative', zIndex: 1 }}>
-                    <MotionBox
+                <div className="hero-container">
+                    <MotionDiv
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
-                        style={{ textAlign: 'center' }}
+                        className="hero-content"
                     >
-                        <Badge
-                            size="lg"
-                            variant="dot"
-                            color="amber"
-                            mb="xl"
-                        >
-                            Premium Styling Services
-                        </Badge>
+                        <Badge.Ribbon text="Premium Styling Services" color="#f59e0b">
+                            <div style={{ paddingTop: 20 }} />
+                        </Badge.Ribbon>
 
-                        <Title
-                            order={1}
-                            style={{
-                                fontSize: rem(72),
-                                fontWeight: 900,
-                                color: 'white',
-                                marginBottom: rem(24),
-                                lineHeight: 1.1,
-                            }}
-                        >
+                        <Title level={1} className="hero-title">
                             Transform Your Look
                             <br />
-                            <Text
-                                component="span"
-                                inherit
-                                variant="gradient"
-                                gradient={{ from: '#f59e0b', to: '#d97706', deg: 45 }}
-                            >
-                                With Style
-                            </Text>
+                            <span className="hero-title-gradient">With Style</span>
                         </Title>
 
-                        <Text
-                            size="xl"
-                            c="dimmed"
-                            maw={600}
-                            mx="auto"
-                            mb="xl"
-                        >
+                        <Text className="hero-subtitle">
                             Experience world-class grooming and styling services from our expert team
                         </Text>
 
-                        <Group justify="center" mt="xl">
+                        <Space size="large" className="hero-buttons">
                             <Button
-                                component={Link}
-                                to="/services"
-                                size="lg"
-                                color="amber"
-                                rightSection={<IconArrowRight size={20} />}
-                                styles={{
-                                    root: {
-                                        fontWeight: 700,
-                                    },
-                                }}
+                                type="primary"
+                                size="large"
+                                icon={<ArrowRightOutlined />}
+                                onClick={() => navigate('/services')}
+                                className="hero-btn-primary"
                             >
                                 Explore Services
                             </Button>
                             {!user && (
                                 <Button
-                                    component={Link}
-                                    to="/login"
-                                    size="lg"
-                                    variant="outline"
-                                    color="gray"
-                                    styles={{
-                                        root: {
-                                            borderColor: 'rgba(255, 255, 255, 0.2)',
-                                            color: 'white',
-                                        },
-                                    }}
+                                    size="large"
+                                    onClick={() => navigate('/login')}
+                                    className="hero-btn-secondary"
                                 >
                                     Sign Up Now
                                 </Button>
                             )}
-                        </Group>
-                    </MotionBox>
-                </Container>
-            </Box>
+                        </Space>
+                    </MotionDiv>
+                </div>
+            </div>
 
             {/* Stats Section */}
-            <Box style={{ padding: '4rem 0', backgroundColor: '#f8f9fa' }}>
-                <Container size="xl">
-                    <MotionBox
+            <div className="stats-section">
+                <div className="container">
+                    <MotionDiv
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                     >
-                        <Title order={2} ta="center" mb={rem(8)} fw={800}>
+                        <Title level={2} className="section-title">
                             Our Achievements
                         </Title>
-                        <Text size="lg" ta="center" c="dimmed" mb="xl" maw={600} mx="auto">
+                        <Text className="section-subtitle">
                             Numbers that speak for our excellence
                         </Text>
-                    </MotionBox>
 
-                    {statsLoading ? (
-                        <Grid>
-                            {[1, 2, 3, 4, 5, 6].map((index) => (
-                                <Grid.Col key={index} span={{ base: 12, sm: 6, md: 4, lg: 2 }}>
-                                    <Paper
-                                        shadow="sm"
-                                        p="xl"
-                                        radius="lg"
-                                        style={{ minHeight: 200 }}
-                                    >
-                                        <Loader size="md" />
-                                    </Paper>
-                                </Grid.Col>
-                            ))}
-                        </Grid>
-                    ) : (
-                        <Grid>
-                            {stats.map((stat, index) => (
-                                <Grid.Col key={index} span={{ base: 12, sm: 6, md: 4, lg: 2 }}>
-                                    <StatCard
-                                        iconName={stat.iconName}
-                                        title={stat.title}
-                                        count={stat.count}
-                                        trend={stat.trend}
-                                        color={stat.color}
-                                    />
-                                </Grid.Col>
-                            ))}
-                        </Grid>
-                    )}
-                </Container>
-            </Box>
+                        {statsLoading ? (
+                            <div style={{ textAlign: 'center', padding: '3rem' }}>
+                                <Spin size="large" />
+                            </div>
+                        ) : (
+                            <Row gutter={[24, 24]} style={{ marginTop: '3rem' }}>
+                                {stats.map((stat, index) => (
+                                    <Col key={index} xs={24} sm={12} md={8} lg={4}>
+                                        <StatCard {...stat} />
+                                    </Col>
+                                ))}
+                            </Row>
+                        )}
+                    </MotionDiv>
+                </div>
+            </div>
 
-            {/* Trending Styles Section */}
-            <Box style={{ padding: '4rem 0', backgroundColor: 'rgba(30, 41, 59, 0.03)' }}>
-                <Container>
-                    <MotionBox
+            {/* Services Section */}
+            <div className="services-section">
+                <div className="container">
+                    <MotionDiv
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                     >
-                        <Title order={2} ta="center" mb={rem(8)} fw={800}>
-                            Trending Styles
+                        <Title level={2} className="section-title">
+                            Our Services
                         </Title>
-                        <Text size="lg" ta="center" c="dimmed" mb="xl" maw={600} mx="auto">
-                            Discover the latest trends in grooming and styling
+                        <Text className="section-subtitle">
+                            Discover our range of professional services
                         </Text>
-                    </MotionBox>
 
-                    <Grid>
-                        {trendingStyles.map((image, index) => (
-                            <Grid.Col key={index} span={{ base: 12, sm: 6, md: 3 }}>
-                                <MotionPaper
-                                    initial={{ opacity: 0, y: 30 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                                    whileHover={{ y: -12 }}
-                                    shadow="sm"
-                                    radius="md"
-                                    style={{
-                                        height: 380,
-                                        cursor: 'pointer',
-                                        position: 'relative',
-                                        overflow: 'hidden',
-                                    }}
-                                >
-                                    <Box
-                                        style={{
-                                            height: '100%',
-                                            backgroundImage: `url(${image})`,
-                                            backgroundSize: 'cover',
-                                            backgroundPosition: 'center',
-                                        }}
-                                    />
-
-                                    <Box
-                                        style={{
-                                            position: 'absolute',
-                                            inset: 0,
-                                            background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.3) 50%, transparent 100%)',
-                                        }}
-                                    />
-
-                                    <Badge
-                                        color="amber"
-                                        variant="filled"
-                                        style={{
-                                            position: 'absolute',
-                                            top: 16,
-                                            right: 16,
-                                        }}
+                        <Row gutter={[32, 32]} style={{ marginTop: '3rem' }}>
+                            {services.map((service, index) => (
+                                <Col key={index} xs={24} sm={12} md={6}>
+                                    <Card
+                                        hoverable
+                                        cover={
+                                            <img
+                                                alt={service.title}
+                                                src={service.image}
+                                                style={{ height: 250, objectFit: 'cover' }}
+                                            />
+                                        }
+                                        className="service-card"
                                     >
-                                        {index % 2 === 0 ? 'TRENDING' : 'POPULAR'}
-                                    </Badge>
-
-                                    <Box
-                                        style={{
-                                            position: 'absolute',
-                                            bottom: 0,
-                                            left: 0,
-                                            right: 0,
-                                            padding: rem(24),
-                                            zIndex: 1,
-                                        }}
-                                    >
-                                        <Title order={6} c="white" fw={700} mb={rem(4)}>
-                                            Style {index + 1}
-                                        </Title>
-                                        <Text size="sm" c="white" opacity={0.9}>
-                                            Latest grooming trends
-                                        </Text>
-                                    </Box>
-                                </MotionPaper>
-                            </Grid.Col>
-                        ))}
-                    </Grid>
-                </Container>
-            </Box>
-
-            {/* Services Section */}
-            <Container size="lg" style={{ padding: '4rem 0' }}>
-                <MotionBox
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                >
-                    <Title order={2} ta="center" mb={rem(8)} fw={800}>
-                        Our Services
-                    </Title>
-                    <Text size="lg" ta="center" c="dimmed" mb="xl" maw={600} mx="auto">
-                        Premium grooming services tailored to your needs
-                    </Text>
-                </MotionBox>
-
-                <Grid gutter="xl">
-                    {services.map((service, index) => (
-                        <Grid.Col key={index} span={{ base: 12, sm: 6 }}>
-                            <MotionBox
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.6, delay: index * 0.1 }}
-                                whileHover={{
-                                    y: -12,
-                                    transition: { duration: 0.3 }
-                                }}
-                                style={{ height: '100%' }}
-                            >
-                                <Card
-                                    shadow="sm"
-                                    padding="lg"
-                                    radius="md"
-                                    style={{
-                                        height: 420,
-                                        cursor: 'pointer',
-                                        position: 'relative',
-                                        overflow: 'hidden',
-                                    }}
-                                    onClick={() => navigate('/services')}
-                                >
-                                    <Card.Section>
-                                        <Image
-                                            src={service.image}
-                                            height={200}
-                                            alt={service.title}
+                                        <Card.Meta
+                                            title={service.title}
+                                            description={service.description}
                                         />
-                                    </Card.Section>
+                                    </Card>
+                                </Col>
+                            ))}
+                        </Row>
 
-                                    <Badge color="amber" variant="filled" mt="md">
-                                        PREMIUM
-                                    </Badge>
-
-                                    <Title order={3} mt="md" fw={800}>
-                                        {service.title}
-                                    </Title>
-
-                                    <Text size="sm" c="dimmed" mt="sm">
-                                        {service.description}
-                                    </Text>
-
-                                    <Button
-                                        color="amber"
-                                        fullWidth
-                                        mt="md"
-                                        radius="md"
-                                        rightSection={<IconArrowRight size={16} />}
-                                    >
-                                        Learn More
-                                    </Button>
-                                </Card>
-                            </MotionBox>
-                        </Grid.Col>
-                    ))}
-                </Grid>
-            </Container>
+                        <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+                            <Button
+                                type="primary"
+                                size="large"
+                                onClick={() => navigate('/services')}
+                            >
+                                View All Services
+                            </Button>
+                        </div>
+                    </MotionDiv>
+                </div>
+            </div>
 
             {/* CTA Section */}
-            <Box style={{ backgroundColor: '#f59e0b', padding: '4rem 0', color: 'white' }}>
-                <Container>
-                    <Grid align="center">
-                        <Grid.Col span={{ base: 12, md: 6 }}>
-                            <MotionBox
-                                initial={{ opacity: 0, x: -30 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.6 }}
-                            >
-                                <Title order={2} c="white" fw={800} mb="md">
-                                    Ready to Transform Your Look?
-                                </Title>
-                                <Text size="lg" c="white" mb="xl">
-                                    Book your appointment now and experience the difference
-                                </Text>
-                                <Group>
-                                    <Button
-                                        component={Link}
-                                        to="/services"
-                                        size="lg"
-                                        variant="white"
-                                        color="dark"
-                                        rightSection={<IconArrowRight size={20} />}
-                                    >
-                                        Book Now
-                                    </Button>
-                                    <Button
-                                        component="a"
-                                        href="tel:+919999999999"
-                                        size="lg"
-                                        variant="outline"
-                                        style={{
-                                            borderColor: 'white',
-                                            color: 'white',
-                                        }}
-                                        leftSection={<IconPhone size={20} />}
-                                    >
-                                        Call Us
-                                    </Button>
-                                </Group>
-                            </MotionBox>
-                        </Grid.Col>
-                        <Grid.Col span={{ base: 12, md: 6 }}>
-                            <MotionBox
-                                initial={{ opacity: 0, x: 30 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.6 }}
-                            >
-                                <Image
-                                    src="https://d3r0z4awu7ba6n.cloudfront.net/images/cta/booking.jpg"
-                                    radius="md"
-                                    alt="Book appointment"
-                                />
-                            </MotionBox>
-                        </Grid.Col>
-                    </Grid>
-                </Container>
-            </Box>
-
-            {/* Partners Section */}
-            <Box style={{ padding: '4rem 0' }}>
-                <Container>
-                    <Title order={3} ta="center" mb="xl" c="dimmed" fw={700}>
-                        Trusted by leading brands
-                    </Title>
-
-                    <Grid justify="center">
-                        {partners.map((partner, index) => (
-                            <Grid.Col key={index} span={{ base: 6, sm: 4, md: 3 }}>
-                                <MotionPaper
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    whileInView={{ opacity: 1, scale: 1 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                                    whileHover={{ scale: 1.05 }}
-                                    shadow="xs"
-                                    p="xl"
-                                    radius="md"
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        minHeight: 100,
-                                    }}
-                                >
-                                    <Text size="lg" fw={700} c="dimmed">
-                                        {partner.name}
-                                    </Text>
-                                </MotionPaper>
-                            </Grid.Col>
-                        ))}
-                    </Grid>
-                </Container>
-            </Box>
-        </Box>
+            <div className="cta-section">
+                <div className="container">
+                    <MotionDiv
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="cta-content"
+                    >
+                        <Title level={2} style={{ color: 'white', marginBottom: 16 }}>
+                            Ready to Transform Your Look?
+                        </Title>
+                        <Text style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: 18, display: 'block', marginBottom: 32 }}>
+                            Book your appointment today and experience the difference
+                        </Text>
+                        <Button
+                            type="primary"
+                            size="large"
+                            onClick={() => navigate('/services')}
+                            className="cta-button"
+                        >
+                            Book Now
+                        </Button>
+                    </MotionDiv>
+                </div>
+            </div>
+        </div>
     );
 };
 
