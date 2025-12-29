@@ -9,9 +9,9 @@
         "emitDecoratorMetadata": true,
         /* Modules */
         "module": "commonjs",
-        "rootDir": "./src",
+        "rootDir": "src",
         "moduleResolution": "node",
-        "baseUrl": "./src",
+        "baseUrl": "src",
         "paths": {
             "@config/*": [
                 "config/*"
@@ -31,7 +31,7 @@
         },
         "resolveJsonModule": true,
         /* Emit */
-        "outDir": "./dist",
+        "outDir": "dist",
         "declaration": true,
         "declarationMap": true,
         "sourceMap": true,
