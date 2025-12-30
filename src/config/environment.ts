@@ -12,6 +12,7 @@ export const config = {
      * Environment
      */
     env: process.env.NODE_ENV || 'development',
+    nodeEnv: process.env.NODE_ENV || 'development',
     isProduction: process.env.NODE_ENV === 'production',
     isDevelopment: process.env.NODE_ENV === 'development',
     isTest: process.env.NODE_ENV === 'test',
@@ -74,6 +75,16 @@ export const config = {
             fromEmail: process.env.SES_FROM_EMAIL || 'noreply@styler.com',
             fromName: process.env.SES_FROM_NAME || 'Styler',
         },
+    },
+
+    /**
+     * CloudWatch Configuration
+     */
+    cloudwatch: {
+        enabled: process.env.CLOUDWATCH_ENABLED === 'true',
+        logGroup: process.env.CLOUDWATCH_LOG_GROUP || `/styler/backend/${process.env.NODE_ENV || 'development'}`,
+        logStream: process.env.CLOUDWATCH_LOG_STREAM || `${process.env.HOSTNAME || 'local'}-${Date.now()}`,
+        region: process.env.CLOUDWATCH_REGION || process.env.AWS_REGION || 'us-east-1',
     },
 
     /**

@@ -1,4 +1,5 @@
 import winston from 'winston';
+import WinstonCloudWatch from 'winston-cloudwatch';
 import path from 'path';
 import { config } from '@config/environment';
 
@@ -44,32 +45,65 @@ const fileFormat = winston.format.combine(
 );
 
 // Create logger instance
+const transports: winston.transport[] = [
+    // Console transport
+    new winston.transports.Console({
+        format: consoleFormat,
+    }),
+
+    // File transport for errors
+    new winston.transports.File({
+        filename: path.join(process.cwd(), 'logs', 'error.log'),
+        level: 'error',
+        format: fileFormat,
+        maxsize: 5242880, // 5MB
+        maxFiles: 5,
+    }),
+
+    // File transport for all logs
+    new winston.transports.File({
+        filename: path.join(process.cwd(), 'logs', 'combined.log'),
+        format: fileFormat,
+        maxsize: 5242880, // 5MB
+        maxFiles: 5,
+    }),
+];
+
+// Add CloudWatch transport if enabled
+if (config.cloudwatch?.enabled && config.aws.accessKeyId) {
+    try {
+        transports.push(
+            new WinstonCloudWatch({
+                logGroupName: config.cloudwatch.logGroup,
+                logStreamName: config.cloudwatch.logStream,
+                awsRegion: config.cloudwatch.region,
+                awsAccessKeyId: config.aws.accessKeyId,
+                awsSecretKey: config.aws.secretAccessKey,
+                messageFormatter: ({ level, message, ...meta }) => {
+                    return JSON.stringify({
+                        level,
+                        message,
+                        ...meta,
+                        timestamp: new Date().toISOString(),
+                    });
+                },
+                retentionInDays: 7,
+                uploadRate: 2000, // Send logs every 2 seconds
+                errorHandler: (error) => {
+                    console.error('CloudWatch logging error:', error);
+                },
+            })
+        );
+        console.log('✅ CloudWatch Logs transport initialized');
+    } catch (error) {
+        console.error('❌ Failed to initialize CloudWatch transport:', error);
+    }
+}
+
 export const logger = winston.createLogger({
     levels: logLevels,
     level: config.logging.level,
-    transports: [
-        // Console transport
-        new winston.transports.Console({
-            format: consoleFormat,
-        }),
-
-        // File transport for errors
-        new winston.transports.File({
-            filename: path.join(process.cwd(), 'logs', 'error.log'),
-            level: 'error',
-            format: fileFormat,
-            maxsize: 5242880, // 5MB
-            maxFiles: 5,
-        }),
-
-        // File transport for all logs
-        new winston.transports.File({
-            filename: path.join(process.cwd(), 'logs', 'combined.log'),
-            format: fileFormat,
-            maxsize: 5242880, // 5MB
-            maxFiles: 5,
-        }),
-    ],
+    transports,
     exceptionHandlers: [
         new winston.transports.File({
             filename: path.join(process.cwd(), 'logs', 'exceptions.log'),
@@ -81,6 +115,7 @@ export const logger = winston.createLogger({
         }),
     ],
 });
+
 
 // Don't log to files in test environment
 if (config.isTest) {
