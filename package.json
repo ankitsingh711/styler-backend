@@ -18,7 +18,15 @@
     "test:integration": "jest --testPathPattern=tests/integration",
     "test:e2e": "jest --testPathPattern=tests/e2e",
     "migrate": "ts-node -r tsconfig-paths/register migrations/run.ts",
-    "seed": "ts-node -r tsconfig-paths/register scripts/seed.ts"
+    "seed": "ts-node -r tsconfig-paths/register scripts/seed.ts",
+    "docker:build": "docker build -t styler-backend:latest .",
+    "docker:build:dev": "docker build -f Dockerfile.dev -t styler-backend:dev .",
+    "docker:dev": "docker-compose --profile dev up",
+    "docker:dev:build": "docker-compose --profile dev up --build",
+    "docker:down": "docker-compose down",
+    "docker:clean": "docker-compose down -v",
+    "docker:logs": "docker-compose logs -f backend",
+    "docker:restart": "docker-compose restart backend"
   },
   "keywords": [
     "salon",
