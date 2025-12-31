@@ -3,6 +3,7 @@ import { userRepository } from '@modules/users/repositories/user.repository';
 import { tokenService } from './token.service';
 import { config } from '@config/environment';
 import { logger } from '@infrastructure/logger/logger.service';
+import { s3Service } from '@infrastructure/storage/s3.service';
 import {
     InvalidCredentialsException,
     ConflictException,
@@ -10,7 +11,7 @@ import {
     BadRequestException,
     UnauthorizedException,
 } from '@common/exceptions';
-import { JwtPayload, TokenPair } from '@common/interfaces';
+import { JwtPayload, TokenPair, FileUpload } from '@common/interfaces';
 import { IUser } from '@modules/users/entities/user.entity';
 import { UserRole } from '@common/constants';
 
@@ -295,6 +296,36 @@ export class AuthService {
     }
 
     /**
+     * Update user profile
+     */
+    async updateProfile(
+        userId: string,
+        updates: { name?: string; phone?: string; profilePicture?: string }
+    ): Promise<IUser> {
+        const user = await userRepository.findById(userId);
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        // Check if phone is being updated and if it's already taken
+        if (updates.phone && updates.phone !== user.phone) {
+            const phoneExists = await userRepository.phoneExists(updates.phone, userId);
+            if (phoneExists) {
+                throw new ConflictException('Phone number already in use');
+            }
+        }
+
+        // Update user
+        const updatedUser = await userRepository.updateById(userId, updates);
+        if (!updatedUser) {
+            throw new NotFoundException('Failed to update user');
+        }
+
+        logger.info(`User profile updated: ${user.email}`);
+        return updatedUser;
+    }
+
+    /**
      * Get user profile
      */
     async getUserProfile(userId: string): Promise<IUser> {
@@ -303,6 +334,40 @@ export class AuthService {
             throw new NotFoundException('User not found');
         }
         return user;
+    }
+
+    /**
+     * Upload profile picture
+     */
+    async uploadProfilePicture(userId: string, file: FileUpload): Promise<string> {
+        const user = await userRepository.findById(userId);
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        // Delete old profile picture from S3 if exists
+        if (user.profilePicture) {
+            try {
+                const oldKey = user.profilePicture.split('.com/')[1];
+                if (oldKey) {
+                    await s3Service.deleteFile(oldKey);
+                }
+            } catch (error) {
+                // Ignore errors if file doesn't exist
+                logger.warn(`Failed to delete old profile picture: ${error}`);
+            }
+        }
+
+        // Upload new profile picture to S3
+        const uploadedFile = await s3Service.uploadFile(file, 'profile-pictures');
+
+        // Update user with new profile picture URL
+        await userRepository.updateById(userId, {
+            profilePicture: uploadedFile.url,
+        });
+
+        logger.info(`Profile picture uploaded for user: ${user.email}`);
+        return uploadedFile.url;
     }
 }
 

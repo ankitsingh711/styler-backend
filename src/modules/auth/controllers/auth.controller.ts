@@ -192,6 +192,74 @@ export class AuthController {
             next(error);
         }
     }
+
+    /**
+     * Update user profile
+     * PUT /api/v1/auth/profile
+     */
+    async updateProfile(
+        req: AuthenticatedRequest,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> {
+        try {
+            const userId = req.userId;
+            if (!userId) {
+                throw new BadRequestException('User ID not found');
+            }
+
+            const { name, phone, profilePicture } = req.body;
+
+            if (!name && !phone && !profilePicture) {
+                throw new BadRequestException('At least one field must be provided for update');
+            }
+
+            const updatedUser = await authService.updateProfile(userId, {
+                name,
+                phone,
+                profilePicture,
+            });
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: 'Profile updated successfully',
+                data: updatedUser,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * Upload profile picture
+     * POST /api/v1/auth/upload-profile-picture
+     */
+    async uploadProfilePicture(
+        req: AuthenticatedRequest,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> {
+        try {
+            const userId = req.userId;
+            if (!userId) {
+                throw new BadRequestException('User ID not found');
+            }
+
+            if (!req.file) {
+                throw new BadRequestException('No file uploaded');
+            }
+
+            const profilePictureUrl = await authService.uploadProfilePicture(userId, req.file as any);
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: 'Profile picture uploaded successfully',
+                data: { profilePicture: profilePictureUrl },
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export const authController = new AuthController();

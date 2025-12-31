@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authController } from '../controllers/auth.controller';
 import { authGuard } from '@shared/guards/auth.guard';
+import { upload } from '@shared/middleware/upload.middleware';
 
 const router = Router();
 
@@ -47,5 +48,24 @@ router.post('/change-password', authGuard, (req, res, next) =>
  * @access  Private
  */
 router.get('/me', authGuard, (req, res, next) => authController.getCurrentUser(req, res, next));
+
+/**
+ * @route   PUT /api/v1/auth/profile
+ * @desc    Update user profile
+ * @access  Private
+ */
+router.put('/profile', authGuard, (req, res, next) => authController.updateProfile(req, res, next));
+
+/**
+ * @route   POST /api/v1/auth/upload-profile-picture
+ * @desc    Upload profile picture
+ * @access  Private
+ */
+router.post(
+    '/upload-profile-picture',
+    authGuard,
+    upload.single('profilePicture'),
+    (req, res, next) => authController.uploadProfilePicture(req, res, next)
+);
 
 export const authRoutes: Router = router;
