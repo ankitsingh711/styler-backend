@@ -369,6 +369,41 @@ export class AuthService {
         logger.info(`Profile picture uploaded for user: ${user.email}`);
         return uploadedFile.url;
     }
+
+    /**
+     * Upload cover image
+     */
+    async uploadCoverImage(userId: string, file: FileUpload): Promise<string> {
+        const user = await userRepository.findById(userId);
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        // Delete old cover image from S3 if exists
+        if (user.coverImage) {
+            try {
+                const oldKey = user.coverImage.split('.com/')[1];
+                if (oldKey) {
+                    await s3Service.deleteFile(oldKey);
+                }
+            } catch (error) {
+                // Ignore errors if file doesn't exist
+                logger.warn(`Failed to delete old cover image: ${error}`);
+            }
+        }
+
+        // Upload new cover image to S3
+        const uploadedFile = await s3Service.uploadFile(file, 'cover-images');
+
+        // Update user with new cover image URL
+        await userRepository.updateById(userId, {
+            coverImage: uploadedFile.url,
+        });
+
+        logger.info(`Cover image uploaded for user: ${user.email}`);
+
+        return uploadedFile.url;
+    }
 }
 
 export const authService = new AuthService();

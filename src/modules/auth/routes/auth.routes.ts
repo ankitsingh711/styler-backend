@@ -68,4 +68,16 @@ router.post(
     (req, res, next) => authController.uploadProfilePicture(req, res, next)
 );
 
+/**
+ * @route   POST /api/v1/auth/upload-cover-image
+ * @desc    Upload cover image
+ * @access  Private
+ */
+router.post(
+    '/upload-cover-image',
+    authGuard,
+    upload.single('coverImage'),
+    (req, res, next) => authController.uploadCoverImage(req, res, next)
+);
+
 export const authRoutes: Router = router;

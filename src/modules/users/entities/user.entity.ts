@@ -41,6 +41,7 @@ export interface IUser extends Document {
     gender?: Gender;
     dateOfBirth?: Date;
     profilePicture?: string;
+    coverImage?: string;
     addresses: IAddress[];
     preferences: IUserPreferences;
     role: UserRole;
@@ -140,6 +141,9 @@ const UserSchema = new Schema<IUser>(
             type: Date,
         },
         profilePicture: {
+            type: String,
+        },
+        coverImage: {
             type: String,
         },
         addresses: [AddressSchema],

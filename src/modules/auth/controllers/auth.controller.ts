@@ -260,6 +260,39 @@ export class AuthController {
             next(error);
         }
     }
+
+    /**
+     * Upload cover image
+     * POST /api/v1/auth/upload-cover-image
+     */
+    async uploadCoverImage(
+        req: AuthenticatedRequest,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> {
+        try {
+            const userId = req.userId;
+            if (!userId) {
+                throw new BadRequestException('User ID not found');
+            }
+
+            if (!req.file) {
+                throw new BadRequestException('No file uploaded');
+            }
+
+            const coverImageUrl = await authService.uploadCoverImage(userId, req.file);
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: 'Cover image uploaded successfully',
+                data: {
+                    coverImage: coverImageUrl,
+                },
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export const authController = new AuthController();
