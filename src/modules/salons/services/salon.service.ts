@@ -137,6 +137,22 @@ export class SalonService {
     /**
      * Upload salon images
      */
+    /**
+     * Upload images (for salon creation before salon exists)
+     */
+    async uploadImages(files: FileUpload[]): Promise<string[]> {
+        // Upload images to S3
+        const uploadedFiles = await s3Service.uploadMultipleFiles(files, 'salons');
+        const imageUrls = uploadedFiles.map((file) => file.url);
+
+        logger.info(`Uploaded ${imageUrls.length} images for new salon`);
+
+        return imageUrls;
+    }
+
+    /**
+     * Upload images to existing salon
+     */
     async uploadSalonImages(
         salonId: string,
         ownerId: string,
@@ -306,6 +322,34 @@ export class SalonService {
         await salonRepository.softDelete(salonId);
 
         logger.info(`Salon deleted: ${salonId}`);
+    }
+
+    /**
+     * Get salon barbers
+     */
+    async getSalonBarbers(salonId: string): Promise<any[]> {
+        // Verify salon exists
+        const salon = await this.getSalonById(salonId);
+
+        // Get barbers from barber module
+        const { barberRepository } = await import('@modules/barbers/repositories/barber.repository');
+        const { BarberStatus } = await import('@common/constants');
+
+        const result = await barberRepository.findBySalonId(salonId, BarberStatus.APPROVED);
+
+        // Filter only active barbers
+        const activeBarbers = result.data.filter(barber => barber.isActive);
+
+        // Return simplified barber data for booking
+        return activeBarbers.map(barber => ({
+            _id: barber._id,
+            displayName: barber.displayName,
+            bio: barber.bio,
+            specializations: barber.specializations,
+            experience: barber.experience,
+            profileImage: barber.profileImage,
+            rating: barber.rating,
+        }));
     }
 }
 

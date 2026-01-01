@@ -331,6 +331,55 @@ export class SalonController {
             next(error);
         }
     }
+
+    /**
+     * Upload salon images
+     * POST /api/v1/salons/upload-images
+     */
+    async uploadImages(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const userId = req.userId;
+            if (!userId) {
+                throw new BadRequestException('User ID not found');
+            }
+
+            if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
+                throw new BadRequestException('No files uploaded');
+            }
+
+            if (req.files.length > 3) {
+                throw new BadRequestException('Maximum 3 images allowed');
+            }
+
+            const imageUrls = await salonService.uploadImages(req.files as any[]);
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: 'Images uploaded successfully',
+                data: { images: imageUrls },
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * Get salon barbers
+     * GET /api/v1/salons/:id/barbers
+     */
+    async getSalonBarbers(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { id } = req.params;
+            const barbers = await salonService.getSalonBarbers(id);
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                data: barbers,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export const salonController = new SalonController();

@@ -300,7 +300,18 @@ export class AuthService {
      */
     async updateProfile(
         userId: string,
-        updates: { name?: string; phone?: string; profilePicture?: string }
+        updates: {
+            name?: string;
+            phone?: string;
+            profilePicture?: string;
+            address?: {
+                street: string;
+                city: string;
+                state: string;
+                pincode: string;
+                country?: string;
+            }
+        }
     ): Promise<IUser> {
         const user = await userRepository.findById(userId);
         if (!user) {
@@ -315,8 +326,42 @@ export class AuthService {
             }
         }
 
+        // Prepare update data
+        const updateData: any = {
+            name: updates.name,
+            phone: updates.phone,
+            profilePicture: updates.profilePicture,
+        };
+
+        // Handle address update - add or update default address in addresses array
+        if (updates.address) {
+            const addressData = {
+                type: 'home' as const,
+                street: updates.address.street,
+                city: updates.address.city,
+                state: updates.address.state,
+                pincode: updates.address.pincode,
+                country: updates.address.country || 'India',
+                isDefault: true,
+            };
+
+            // Remove any existing default address
+            if (user.addresses && user.addresses.length > 0) {
+                // Set all addresses to non-default
+                updateData.addresses = user.addresses.map(addr => ({
+                    ...addr,
+                    isDefault: false,
+                }));
+                // Add new default address
+                updateData.addresses.push(addressData);
+            } else {
+                // First address
+                updateData.addresses = [addressData];
+            }
+        }
+
         // Update user
-        const updatedUser = await userRepository.updateById(userId, updates);
+        const updatedUser = await userRepository.updateById(userId, updateData);
         if (!updatedUser) {
             throw new NotFoundException('Failed to update user');
         }

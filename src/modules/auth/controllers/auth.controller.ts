@@ -208,16 +208,24 @@ export class AuthController {
                 throw new BadRequestException('User ID not found');
             }
 
-            const { name, phone, profilePicture } = req.body;
+            const { name, phone, profilePicture, address } = req.body;
 
-            if (!name && !phone && !profilePicture) {
+            if (!name && !phone && !profilePicture && !address) {
                 throw new BadRequestException('At least one field must be provided for update');
+            }
+
+            // Validate address if provided
+            if (address) {
+                if (!address.street || !address.city || !address.state || !address.pincode) {
+                    throw new BadRequestException('Address must include street, city, state, and pincode');
+                }
             }
 
             const updatedUser = await authService.updateProfile(userId, {
                 name,
                 phone,
                 profilePicture,
+                address,
             });
 
             res.status(HttpStatus.OK).json({
