@@ -13,6 +13,7 @@ import { appointmentRoutes } from '@modules/appointments/routes/appointment.rout
 import { paymentRoutes } from '@modules/payments/routes/payment.routes';
 import { reviewRoutes } from '@modules/reviews/routes/review.routes';
 import { barberRoutes } from '@modules/barbers/routes/barber.routes';
+import adminRoutes from '@modules/admin/routes/admin.routes';
 
 /**
  * Create and configure Express application
@@ -78,6 +79,7 @@ export function createApp(): Application {
     app.use(`/api/${apiVersion}/payments`, paymentRoutes);
     app.use(`/api/${apiVersion}/reviews`, reviewRoutes);
     app.use(`/api/${apiVersion}/barbers`, barberRoutes);
+    app.use(`/api/${apiVersion}/admin`, adminRoutes);
 
     // 404 handler
     app.use((req: Request, res: Response) => {
