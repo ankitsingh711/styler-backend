@@ -22,6 +22,7 @@ export interface CreateSalonDTO {
     description: string;
     phone: string;
     email: string;
+    images?: string[];
     address: {
         street: string;
         city: string;
@@ -75,6 +76,7 @@ export class SalonService {
             description: dto.description,
             phone: dto.phone,
             email: dto.email.toLowerCase(),
+            images: dto.images || [],
             address: {
                 street: dto.address.street,
                 city: dto.address.city,
@@ -299,6 +301,38 @@ export class SalonService {
      */
     async getSalonsByOwner(ownerId: string): Promise<ISalon[]> {
         return await salonRepository.findByOwnerId(ownerId);
+    }
+
+    /**
+     * Get salon owner statistics
+     */
+    async getOwnerStats(ownerId: string): Promise<any> {
+        // Get owner's salons
+        const salons = await salonRepository.findByOwnerId(ownerId);
+        const salonIds = salons.map(s => s._id);
+
+        // Calculate stats
+        let totalStaff = 0;
+        let totalBookings = 0;
+        let monthlyRevenue = 0;
+
+        // Count total staff (barbers) across all salons
+        for (const salon of salons) {
+            if (salon.barbers && Array.isArray(salon.barbers)) {
+                totalStaff += salon.barbers.length;
+            }
+        }
+
+        // For bookings and revenue, we would need to query the appointment repository
+        // For now, returning mock data - this should be replaced with actual queries
+        // TODO: Implement actual appointment aggregation
+
+        return {
+            totalSalons: salons.length,
+            totalStaff,
+            totalBookings,
+            monthlyRevenue
+        };
     }
 
     /**

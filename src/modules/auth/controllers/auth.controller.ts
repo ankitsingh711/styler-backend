@@ -301,6 +301,29 @@ export class AuthController {
             next(error);
         }
     }
+
+    /**
+     * Check if user exists by email or phone
+     * POST /api/v1/auth/check-user
+     */
+    async checkUserExists(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { email, phone } = req.body;
+
+            if (!email && !phone) {
+                throw new BadRequestException('Email or phone is required');
+            }
+
+            const result = await authService.checkUserExists(email, phone);
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                data: result,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export const authController = new AuthController();

@@ -449,6 +449,30 @@ export class AuthService {
 
         return uploadedFile.url;
     }
+
+    /**
+     * Check if user exists by email or phone
+     */
+    async checkUserExists(email?: string, phone?: string): Promise<{ exists: boolean; user?: { role: UserRole; email?: string; phone?: string } }> {
+        if (!email && !phone) {
+            return { exists: false };
+        }
+
+        const user = await userRepository.findByEmailOrPhone(email || '', phone || '');
+
+        if (!user) {
+            return { exists: false };
+        }
+
+        return {
+            exists: true,
+            user: {
+                role: user.role,
+                email: user.email,
+                phone: user.phone,
+            },
+        };
+    }
 }
 
 export const authService = new AuthService();

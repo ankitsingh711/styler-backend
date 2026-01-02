@@ -110,6 +110,28 @@ export class SalonController {
     }
 
     /**
+     * Get salon owner statistics
+     * GET /api/v1/salons/stats/owner
+     */
+    async getOwnerStats(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const userId = req.userId;
+            if (!userId) {
+                throw new BadRequestException('User ID not found');
+            }
+
+            const stats = await salonService.getOwnerStats(userId);
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                data: stats,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
      * Search nearby salons
      * GET /api/v1/salons/nearby
      */

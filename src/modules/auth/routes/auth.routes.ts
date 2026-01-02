@@ -80,4 +80,11 @@ router.post(
     (req, res, next) => authController.uploadCoverImage(req, res, next)
 );
 
+/**
+ * @route   POST /api/v1/auth/check-user
+ * @desc    Check if user exists by email or phone
+ * @access  Public
+ */
+router.post('/check-user', (req, res, next) => authController.checkUserExists(req, res, next));
+
 export const authRoutes: Router = router;

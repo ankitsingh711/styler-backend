@@ -22,6 +22,15 @@ router.get('/nearby', (req, res, next) => salonController.searchNearbySalons(req
 router.get('/search', (req, res, next) => salonController.searchSalons(req, res, next));
 
 /**
+ * @route   GET /api/v1/salons/stats/owner
+ * @desc    Get salon owner statistics
+ * @access  Private (Salon Owner)
+ */
+router.get('/stats/owner', authGuard, rolesGuard(UserRole.SALON_OWNER, UserRole.SUPER_ADMIN), (req, res, next) =>
+    salonController.getOwnerStats(req, res, next)
+);
+
+/**
  * @route   GET /api/v1/salons/my
  * @desc    Get my salons (for salon owners)
  * @access  Private (Salon Owner)
